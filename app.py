@@ -182,7 +182,6 @@ with tab2:
         ["Bar Chart", "Line Chart", "Scatter Plot", "Data Table"]
     )
 
-    # Check if "None" is selected (do not display any data if "None" is chosen)
     if single_source_selected_visuals:
         if "Bar Chart" in single_source_selected_visuals:
             fig = px.bar(gap_df, x='Dataset', y='Accuracy',
@@ -193,14 +192,14 @@ with tab2:
             st.plotly_chart(fig)
 
         if "Line Chart" in single_source_selected_visuals:
-            line_data = generate_line_data()  # Assuming a function to generate the data
+            line_data = generate_line_data()  #
             fig = px.line(line_data, x='Epoch', y='Accuracy',
                           title="Accuracy Progression",
                           labels={'Accuracy': 'Accuracy'})
             st.plotly_chart(fig)
 
         if "Scatter Plot" in single_source_selected_visuals:
-            scatter_data = generate_scatter_data()  # Assuming a function to generate the data
+            scatter_data = generate_scatter_data()
             fig = px.scatter(scatter_data, x='Simulated Prediction', y='Real Prediction',
                              title="Simulated vs Real Predictions",
                              trendline="ols",
@@ -218,7 +217,7 @@ with tab3:
     st.header("Experiment Results: Single vs. Multi Source")
 
     # Load precomputed data
-    data = load_experiment_data()  # Assuming a function to load your data
+    data = load_experiment_data()
 
     if data is not None and not data.empty:
         # Visualization options (using the global chart type by default)
@@ -354,7 +353,6 @@ with tab4:
         default="Bar Chart"
     )
 
-    # Check if "None" is selected (do not display any data if "None" is chosen)
     if domain_adaptation_results_tab4:
         # Bar Chart
         if "Bar Chart" in domain_adaptation_results_tab4:

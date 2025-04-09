@@ -4,6 +4,9 @@ import pandas as pd
 import plotly.express as px
 import os
 
+# Set the page layout to wide
+st.set_page_config(layout="wide")
+
 # Function to create line chart data
 def generate_line_data():
     epochs = list(range(1, 81))
@@ -99,12 +102,6 @@ def load_meta_accuracy_csv(chart_type):
 
     except FileNotFoundError:
         st.error("CSV file not found. Please ensure the file 'meta_accuracy_over_time.csv' is in the correct location.")
-
-# Sidebar Controls
-st.sidebar.header("Visualization Settings")
-
-# Sidebar for color picker (global)
-data_color = st.sidebar.color_picker("Pick a color for your data", "#1f77b4")
 
 # Tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Home", "Gap Analysis", "Single vs Multi-Source", "Meta Learning"])

@@ -207,6 +207,7 @@ with tab2:
             st.plotly_chart(fig)
 
         if "Data Table" in single_source_selected_visuals:
+            st.subheader("Gap Analysis Table")
             st.dataframe(gap_df)
 
     else:
@@ -325,23 +326,22 @@ with tab4:
     st.header("Meta Learning Results")
 
     # First set of visualization options
-    meta_learning_selected_visuals_tab4 = st.multiselect(
+    meta_learning_selected_visuals = st.multiselect(
         "Choose visualizations to display for Meta Learning Results",
-        ["Bar Chart", "Line Chart", "Data Table"],
-        default="Bar Chart"
+        ["Bar Chart", "Line Chart", "Data Table"]
     )
 
-    if meta_learning_selected_visuals_tab4:
+    if meta_learning_selected_visuals:
         # Bar Chart
-        if "Bar Chart" in meta_learning_selected_visuals_tab4:
+        if "Bar Chart" in meta_learning_selected_visuals:
             load_meta_accuracy_csv(chart_type="Bar Chart")
 
         # Line Chart
-        if "Line Chart" in meta_learning_selected_visuals_tab4:
+        if "Line Chart" in meta_learning_selected_visuals:
             load_meta_accuracy_csv(chart_type="Line Chart")
 
         # Data Table
-        if "Data Table" in meta_learning_selected_visuals_tab4:
+        if "Data Table" in meta_learning_selected_visuals:
             load_meta_accuracy_csv(chart_type="Table")
     else:
         st.info("No data selected to display in Meta Learning Results.")
@@ -349,8 +349,7 @@ with tab4:
     # Second set of visualization options (Domain Adaptation Results)
     domain_adaptation_results_tab4 = st.multiselect(
         "Choose visualizations to display for Domain Adaptation Results",
-        ["Line Chart", "Bar Chart", "Data Table"],
-        default="Bar Chart"
+        ["Line Chart", "Bar Chart", "Data Table"]
     )
 
     if domain_adaptation_results_tab4:

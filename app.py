@@ -148,12 +148,39 @@ with tab1:
 
     with col3:
         st.write('<p><strong>[J]</strong> Xia Cheng and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/tosn2022_2.pdf" target="_blank"> Autonomous Traffic-Aware Scheduling for Industrial Wireless Sensor-Actuator Networks</a>, ACM Transactions on Sensor Networks, Vol. 19, Issue 2, pp. 38:1-38:25, February 2023. <a href="https://github.com/iiot-research/Autonomous-Scheduling" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-        st.write('<p><strong>[C]</strong> Qi Li, Keyang Yu, Dong Chen, Mo Sha, and Long Cheng, <a href="https://users.cs.fiu.edu/~msha/publications/cns22.pdf" target="_blank"> TrafficSpy: Disaggregating VPN-encrypted IoT Network Traffic for User Privacy Inference</a>, IEEE Conference on Communications and Network Security (CNS), October 2022, acceptance ratio: 43/122 = 35.2%. <a href="https://users.cs.fiu.edu/~msha/publications/cns22.pdf" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-        st.write('<p><strong>[C]</strong> Junyang Shi and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icccn22.pdf" target="_blank"> Localizing Campus Shuttles from One Single Base Station Using LoRa Link Characteristics</a>, IEEE International Conference on Computer Communications and Networks (ICCCN), July 2022, acceptance ratio: 39/130=30.0%. [source code and data] <a href="https://users.cs.fiu.edu/~msha/publications/icccn22.pdf" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
+        st.write('<p><strong>[C]</strong> Qi Li, Keyang Yu, Dong Chen, Mo Sha, and Long Cheng, <a href="https://users.cs.fiu.edu/~msha/publications/cns22.pdf" target="_blank"> TrafficSpy: Disaggregating VPN-encrypted IoT Network Traffic for User Privacy Inference</a>, IEEE Conference on Communications and Network Security (CNS), October 2022, acceptance ratio: 43/122 = 35.2%. </p>', unsafe_allow_html=True)
+        st.write('<p><strong>[C]</strong> Junyang Shi and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icccn22.pdf" target="_blank"> Localizing Campus Shuttles from One Single Base Station Using LoRa Link Characteristics</a>, IEEE International Conference on Computer Communications and Networks (ICCCN), July 2022, acceptance ratio: 39/130=30.0%. [source code and data] <a href="https://github.com/junyang28/lorashuttlebus" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
         st.write('<p><strong>[J]</strong> Junyang Shi, Xingjian Chen, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/tosn2022.pdf" target="_blank"> Enabling Cross-technology Communication from LoRa to ZigBee in the 2.4 GHz Band</a>, ACM Transactions on Sensor Networks, Vol. 18, Issue 2, pp. 21:1-21:23, May 2022. [source code and data] <a href="https://github.com/junyang28/paper-ctclora" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
         st.write('<p><strong>[J]</strong> Junyang Shi, Di Mu, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/tosn21.pdf" target="_blank"> Enabling Cross-technology Communication from LoRa to ZigBee via Payload Encoding in Sub-1 GHz Bands</a>, ACM Transactions on Sensor Networks, Vol. 18, Issue 1, pp. 6:1-6:26, February 2022. <a href="https://github.com/junyang28/paper-lorabee" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
         st.write('<p><strong>[J]</strong> Xiao Cheng and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icnp21.pdf" target="_blank">  ATRIA: Autonomous Traffic-Aware Transmission Scheduling for Industrial Wireless Sensor-Actuator Networks</a>, IEEE International Conference on Network Protocols (ICNP), November 2021, acceptance ratio: 38/154 = 24.6%. <a href="https://github.com/iiot-research/Autonomous-Scheduling" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-        st.write('<p><strong>[J]</strong> Junyang Shi, Mo Sha, and Xi Peng, <a href="https://users.cs.fiu.edu/~msha/publications/nsdi21.pdf" target="_blank"> Adapting Wireless Mesh Network Configuration from Simulation to Reality via Deep Learning based Domain Adaptation/a>, USENIX Symposium on Networked Systems Design and Implementation (NSDI), April 2021, acceptance ratio (fall deadline): 40/255 = 15.6%. <a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
+        st.write('<p><strong>[J]</strong> Junyang Shi, Mo Sha, and Xi Peng, <a href="https://users.cs.fiu.edu/~msha/publications/nsdi21.pdf" target="_blank"> Adapting Wireless Mesh Network Configuration from Simulation to Reality via Deep Learning based Domain Adaptation</a>, USENIX Symposium on Networked Systems Design and Implementation (NSDI), April 2021, acceptance ratio (fall deadline): 40/255 = 15.6%. <a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
+
+    st.subheader("Project Links and Acknowledgments")
+
+    st.write("""
+    - **[Project Repository on GitHub](https://github.com/NotAPlumber505/WSN-Parameter-Project)**  
+      Explore the source code, data, and detailed documentation for the project. Contribute to the development and improvement of the platform!
+
+    - **[Project Website](https://users.cs.fiu.edu/~msha/CAREERproject.htm)**  
+      Visit the official project website to learn more about the platform and explore its features.
+
+    - **Funded by**  
+      This research is funded by the National Science Foundation (NSF) and Florida International University (FIU).
+    """)
+
+    col4, col5 = st.columns(2)
+    # Display Logos
+    with col4:
+        st.image("NSF_logo.png", width=150)
+    with col5:
+        st.image("fiu_logo.png", width=150)
+
+    st.write("""
+        The National Science Foundation (NSF) and Florida International University (FIU) represent the ongoing support that makes this groundbreaking research possible. 
+        We acknowledge and thank both NSF and FIU for their generous contributions to advancing the field of industrial wireless sensor-actuator networks (WSANs). 
+        Their collaboration has been instrumental in fostering innovation and enabling the development of this platform.
+    """)
+
 # Gap Analysis Tab
 with tab2:
     st.header("Gap Analysis")
@@ -346,7 +373,7 @@ with tab4:
     # Second set of visualization options (Domain Adaptation Results)
     domain_adaptation_results_tab4 = st.multiselect(
         "Choose visualizations to display for Domain Adaptation Results",
-        ["Line Chart", "Bar Chart", "Data Table"]
+        ["Bar Chart", "Line Chart", "Data Table"]
     )
 
     if domain_adaptation_results_tab4:

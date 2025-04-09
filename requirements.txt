@@ -9,3 +9,4 @@ torchsummary==1.5.1
 torchviz==0.0.2
 streamlit
 plotly
+statsmodels

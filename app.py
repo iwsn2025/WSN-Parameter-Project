@@ -50,7 +50,7 @@ def load_experiment_data():
 # Function to load experiment data for main-performance-degradation
 @st.cache_data
 def load_accuracy_over_time_tab(chart_type):
-    st.header("Accuracy Over Time with Domain Adaptation")
+    st.header("Prediction accuracy change over time without runtime adaptation.")
     csv_path = os.path.join(os.path.dirname(__file__), "accuracy_over_time.csv")
 
     try:
@@ -62,27 +62,52 @@ def load_accuracy_over_time_tab(chart_type):
 
         elif chart_type == "Line Chart":
             st.subheader("Line Chart of Accuracy Over Time")
-            fig = px.line(df_accuracy, x="Days Passed", y="Accuracy", markers=True,
-                          title="Accuracy changes over time with domain adaptation",
-                          labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"})
+            fig = px.line(
+                df_accuracy, x="Days Passed", y="Accuracy", markers=True,
+                title="Accuracy changes over time with domain adaptation",
+                labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"},
+                template="plotly_white"
+            )
             st.plotly_chart(fig)
 
         elif chart_type == "Bar Chart":
-            st.subheader("Bar Chart of Accuracy Over Time")
-            fig = px.bar(df_accuracy, x="Days Passed", y="Accuracy",
-                         title="Accuracy changes over time with domain adaptation",
-                         labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"})
-            st.plotly_chart(fig)
+            st.subheader("Prediction accuracy change over time with our meta-learning based runtime adaptation.")
+            fig = px.bar(
+                df_accuracy, x="Days Passed", y="Accuracy",
+                title="Accuracy changes over time with domain adaptation",
+                labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"},
+                template="plotly_white"
+            )
+
+            # Uniform x-axis ticks
+            fig.update_xaxes(
+                tickvals=[0, 1, 2, 4, 8, 16, 32, 64, 128],
+                title_font=dict(size=14),
+                tickfont=dict(size=12)
+            )
+
+            # Uniform y-axis styling
+            fig.update_yaxes(title_font=dict(size=14), tickfont=dict(size=12))
+
+            # Add consistent layout styling
+            fig.update_layout(
+                legend_title_text='Accuracy',
+                title_font_size=16,
+                title_x=0.5,
+                bargap=0.2,
+                height=500,
+                width=800
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
 
     except FileNotFoundError:
         st.error("Accuracy data not found. Please run the experiment script to generate accuracy_over_time.csv.")
 
 
-# Function to load the meta accuracy CSV file
 @st.cache_data
 def load_meta_accuracy_csv(chart_type):
     try:
-        # Read the CSV file
         df = pd.read_csv('meta_accuracy_over_time.csv')
 
         if chart_type == "Table":
@@ -91,20 +116,62 @@ def load_meta_accuracy_csv(chart_type):
 
         elif chart_type == "Line Chart":
             st.subheader("Line Chart of Meta Learning Accuracy Over Time")
-            st.line_chart(df.set_index('Days Passed')['Accuracy'])
+            if len(df.columns) > 2:
+                df_melted = df.melt(id_vars=["Days Passed"], var_name="Method", value_name="Accuracy")
+                fig = px.line(df_melted, x="Days Passed", y="Accuracy", color="Method", markers=True)
+                fig.update_xaxes(tickvals=[0, 1, 2, 4, 8, 16, 32, 64, 128])
+                st.plotly_chart(fig)
+            else:
+                fig = px.line(df, x="Days Passed", y=df.columns[1], markers=True)
+                fig.update_xaxes(tickvals=[0, 1, 2, 4, 8, 16, 32, 64, 128])
+                st.plotly_chart(fig)
 
         elif chart_type == "Bar Chart":
-            st.subheader("Bar Chart of Meta Learning Accuracy Over Time")
-            fig = px.bar(df, x="Days Passed", y="Accuracy",
-                         title="Meta Learning Accuracy Over Time",
-                         labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"})
-            st.plotly_chart(fig)
+            st.subheader("Prediction accuracy change over time with our meta-learning based runtime adaptation.")
+
+            # Prepare data
+            if len(df.columns) > 2:
+                df_melted = df.melt(id_vars=["Days Passed"], var_name="Method", value_name="Accuracy")
+                fig = px.bar(
+                    df_melted, x="Days Passed", y="Accuracy", color="Method",
+                    barmode="group",
+                    title="Meta Learning Accuracy Over Time",
+                    labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"},
+                    template="plotly_white",
+                )
+            else:
+                fig = px.bar(
+                    df, x="Days Passed", y=df.columns[1],
+                    title="Meta Learning Accuracy Over Time",
+                    labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"},
+                    template="plotly_white",
+                )
+
+            # Uniform x-axis ticks
+            fig.update_xaxes(
+                tickvals=[0, 1, 2, 4, 8, 16, 32, 64, 128],
+                title_font=dict(size=14),
+                tickfont=dict(size=12)
+            )
+            # Uniform y-axis styling
+            fig.update_yaxes(title_font=dict(size=14), tickfont=dict(size=12))
+
+            # Add consistent layout styling
+            fig.update_layout(
+                legend_title_text='Method',
+                title_font_size=16,
+                title_x=0.5,
+                bargap=0.2,
+                height=500,
+                width=800
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
     except FileNotFoundError:
         st.error("CSV file not found. Please ensure the file 'meta_accuracy_over_time.csv' is in the correct location.")
 
 # Tabs
-tab1, tab2, tab3, tab4 = st.tabs(["Home", "Gap Analysis", "Single vs Multi-Source", "Meta Learning"])
+tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network Configuration", "Closing the Gap", "Runtime Adaptation"])
 
 # Home Tab
 with tab1:
@@ -112,6 +179,7 @@ with tab1:
 
     st.subheader("**Team**")
     st.write('<p><strong>Primary Investigator</strong>: <a href="https://users.cs.fiu.edu/~msha/index.htm" target="_blank"> Mo Sha</a>, Associate Professor, Knight Foundation School of Computing and Information Sciences, Florida International University</p>', unsafe_allow_html=True)
+    st.write("PhD Student: Aitian Ma")
     st.write("**Undergraduate Students**: Mario Casas, Jean Cruz")
     st.write("**Alumni**: Xia Cheng, Junyang Shi, Di Mu, Jean Tonday Rodriguez, Yitian Chen, Xingjian Chen")
 
@@ -121,7 +189,7 @@ with tab1:
     st.write("3/12/2021 - 2/28/2026")
     st.image("NSF_logo.png", width=150)
     st.write(
-        '<p>This project is sponsored by the National Science Foundation (NSF) through grant CNS-2150010 (replacing <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2150010&HistoricalAwards=false" target="_blank">  CNS-2046538</a>) [<a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2150010&HistoricalAwards=false" target="_blank">NSF award abstract</a>]</p>',
+        '<p>This project is sponsored by the National Science Foundation (NSF) through grant CNS-2150010 (replacing <a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2046538&HistoricalAwards=false" target="_blank">  CNS-2046538</a>) [<a href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2150010&HistoricalAwards=false" target="_blank">NSF award abstract</a>]</p>',
         unsafe_allow_html=True)
 
     st.write("---")
@@ -167,7 +235,7 @@ with tab1:
 
     st.write('<p><strong>[C]</strong> Aitian Ma, Jean Tonday Rodriguez, Mo Sha, and Dongsheng Luo, Sensorless Air Temperature Sensing Using LoRa Link Characteristics, IEEE International Conference on Distributed Computing in Smart Systems and the Internet of Things (DCOSS-IoT 2025), June 2025. </p>', unsafe_allow_html=True)
     st.write('<p><strong>[C]</strong> Aitian Ma and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/sac25.pdf" target="_blank"> WMN-CDA: Contrastive Domain Adaptation for Wireless Mesh Network Configuration</a>, ACM/SIGAPP Symposium On Applied Computing (SAC) Cyber-Physical Systems Track, March 2025, acceptance ratio: 5/21 = 23.8%.</p>', unsafe_allow_html=True)
-    st.write('<p><strong>[C]</strong> Xia Cheng, Mo Sha, and Dong Chen, <a href="https://users.cs.fiu.edu/~msha/publications/ewsn2024.pdf" target="_blank"> Configuring Industrial Wireless Mesh Networks via Multi-Source Domain Adaptation</a>, ACM International Conference on Embedded Wireless Systems and Networks (EWSN), December 2024.</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[C]</strong> Xia Cheng, Mo Sha, and Dong Chen, <a href="https://users.cs.fiu.edu/~msha/publications/ewsn2024.pdf" target="_blank"> Configuring Industrial Wireless Mesh Networks via Multi-Source Domain Adaptation</a>, ACM International Conference on Embedded Wireless Systems and Networks (EWSN), December 2024, acceptance ratio: 16/70 = 22.8%.</p>', unsafe_allow_html=True)
     st.write('<p><strong>[J]</strong> Xia Cheng and Mo Sha, <a href="hhttps://users.cs.fiu.edu/~msha/publications/tosn2024.pdf" target="_blank"> MERA: Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks</a>, ACM Transactions on Sensor Networks, Vol. 20, Issue 4, pp. 97:1-97:24, July 2024. <a href="https://github.com/ml-wsan/Meta-Adaptation" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
     st.write('<p><strong>[J]</strong> Junyang Shi, Aitian Ma, Xia Cheng, Mo Sha, and Xi Peng, <a href="https://users.cs.fiu.edu/~msha/publications/ton24.pdf target="_blank"> Adapting Wireless Network Configuration from Simulation to Reality via Deep Learning based Domain Adaptation</a>, IEEE/ACM Transactions on Networking, Vol. 32, Issue 3, pp. 1983-1998, June 2024. <a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
     st.write('<p><strong>[C]</strong> Aitian Ma, Jean Tonday Rodriguez, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icccn24.pdf" target="_blank"> Enabling Reliable Environmental Sensing with LoRa, Energy Harvesting, and Domain Adaptation</a>, IEEE International Conference on Computer Communications and Networks (ICCCN), July 2024, acceptance ratio: 47/157 = 29.9%.</p>', unsafe_allow_html=True)
@@ -185,10 +253,10 @@ with tab1:
 
 # Gap Analysis Tab
 with tab2:
-    st.header("Gap Analysis")
+    st.header("Simulation-to-Reality Gap in Network Configuration")
 
     # Sample data (replace with actual data from experiment)
-    sim_val_acc = ['Training: Simulation Data\nTesting: Physical Data', 'Training: Physical Data\nTesting: Physical Data']
+    sim_val_acc = ['Training: Simulation Data, Testing: Physical Data', 'Training: Physical Data, Testing: Physical Data']
     sim_test_acc = 0.85  # Example value (replace with actual)
     phy_test_acc = 0.92  # Example value (replace with actual)
 
@@ -241,16 +309,32 @@ with tab2:
 
 # Single Source vs Multi Source Tab
 with tab3:
-    st.header("Experiment Results: Single vs. Multi Source")
+    st.header("Our solutions to close the simulation-to-reality gap in network configuration.")
 
     # Load precomputed data
     data = load_experiment_data()
 
     if data is not None and not data.empty:
         # Visualization options (using the global chart type by default)
+        st.write("(1) Leveraging domain adaptation to close the gap.")
+        st.write('<p> Junyang Shi, Mo Sha, and Xi Peng, '
+                 '<a href="https://users.cs.fiu.edu/~msha/publications/nsdi21.pdf" target="_blank">'
+                 'Adapting Wireless Mesh Network Configuration from Simulation to Reality via Deep Learning based Domain Adaptation</a>, '
+                 'USENIX Symposium on Networked Systems Design and Implementation (NSDI), '
+                 'April 2021. [<a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
+
+        st.write('<p> Junyang Shi, Aitian Ma, Xia Cheng, Mo Sha, and Xi Peng, '
+                 '<a href="https://users.cs.fiu.edu/~msha/publications/ton24.pdf" target="_blank">'
+                 'Adapting Wireless Network Configuration from '
+                 'Simulation to Reality via Deep Learning based Domain Adaptation</a>, '
+                 'IEEE/ACM Transactions on Networking, '
+                 'Vol. 32, Issue 3, pp. 1983-1998, June 2024. '
+                 '[<a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">'
+                 'source code and data</a>]</p>', unsafe_allow_html=True)
+
         st.subheader("Select Visualizations to Display:")
         single_source_selected_visuals = st.multiselect(
-            "Choose visualizations to display for Single Source Results",
+            "Choose visualizations to display results",
             [
                 "Single Source Bar Chart", "Single Source Line Chart", "Single Source Table",
             ]
@@ -261,7 +345,8 @@ with tab3:
             if "Single Source Bar Chart" in single_source_selected_visuals:
                 fig = px.bar(data, x='Shots', y='Single Source Accuracy',
                              title="Single Source Accuracy (Bar)",
-                             labels={'Single Source Accuracy': 'Accuracy'})
+                             labels={'Single Source Accuracy': 'Accuracy'},
+                             range_y=[0,0.8])
                 st.plotly_chart(fig)
 
             if "Single Source Line Chart" in single_source_selected_visuals:
@@ -278,8 +363,15 @@ with tab3:
         else:
             st.info("No data selected to display in Single Source Results.")
 
+        st.write("(2) Employing multi-source domain adaptation to close the gap.")
+        st.write('<p>Xia Cheng, Mo Sha, and Dong Chen, '
+                 '<a href="https://users.cs.fiu.edu/~msha/publications/ewsn2024.pdf" target="_blank">'
+                 'Configuring Industrial Wireless Mesh Networks via Multi-Source Domain Adaptation</a>, '
+                 'ACM International Conference on Embedded Wireless Systems and Networks (EWSN), '
+                 'December 2024</p>', unsafe_allow_html=True)
+
         multi_source_selected_visuals = st.multiselect(
-            "Choose visualizations to display for Multi Source Results",
+            "Choose visualizations to display results",
             [
                 "Multi Source Bar Chart", "Multi Source Line Chart", "Multi Source Table",
             ]
@@ -291,7 +383,8 @@ with tab3:
                 fig = px.bar(data, x='Shots', y='Multi Source Accuracy',
                              title="Multi Source Accuracy (Bar)",
                              color_discrete_sequence=['red'],
-                             labels={'Multi Source Accuracy': 'Accuracy'})
+                             labels={'Multi Source Accuracy': 'Accuracy'},
+                             range_y=[0,0.8])
                 st.plotly_chart(fig)
 
             if "Multi Source Line Chart" in multi_source_selected_visuals:
@@ -311,7 +404,7 @@ with tab3:
 
 
         combined_source_selected_visuals = st.multiselect(
-            "Choose visualizations to display for Combined Source Results",
+            "Choose visualizations to display results",
             [
                 "Combined Bar Chart", "Combined Line Chart", "Combined Table",
             ],
@@ -328,7 +421,8 @@ with tab3:
                 fig = px.bar(data_melted, x='Shots', y='Accuracy',
                              color='Source Type', barmode='group',
                              title="Single vs. Multi Source Accuracy (Bar)",
-                             labels={'Shots': 'Number of Shots', 'Accuracy': 'Accuracy Score'})
+                             labels={'Shots': 'Number of Shots', 'Accuracy': 'Accuracy Score'},
+                             range_y=[0,0.8])
                 st.plotly_chart(fig)
 
             if "Combined Line Chart" in combined_source_selected_visuals:
@@ -351,43 +445,50 @@ with tab3:
 with tab4:
     st.header("Meta Learning Results")
 
-    # First set of visualization options
+    st.write("Using domain adaptation to adapt the network configuration at runtime.")
+    st.write('<p> Xia Cheng and Mo Sha, '
+             '<a href="https://users.cs.fiu.edu/~msha/publications/iwqos23.pdf" target="_blank">'
+             'Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks</a>, '
+             'IEEE/ACM International Symposium on Quality of Service (IWQoS), June 2023. '
+             '<a href="https://github.com/iiot-research/Selective-Jamming" target="_blank">'
+             '[source code and data]</a></p>', unsafe_allow_html=True)
+
+    st.write('<p> Xia Cheng and Mo Sha, '
+             '<a href="https://users.cs.fiu.edu/~msha/publications/tosn2024.pdf" target="_blank">'
+             'MERA: Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks</a>, '
+             'ACM Transactions on Sensor Networks, Vol. 20, Issue 4, pp. 97:1-97:24, July 2024. '
+             '<a href="https://github.com/ml-wsan/Meta-Adaptation" target="_blank">'
+             '[source code and data]</a></p>', unsafe_allow_html=True)
+
     meta_learning_selected_visuals = st.multiselect(
         "Choose visualizations to display for Meta Learning Results",
         ["Bar Chart", "Line Chart", "Data Table"]
     )
 
     if meta_learning_selected_visuals:
-        # Bar Chart
         if "Bar Chart" in meta_learning_selected_visuals:
             load_meta_accuracy_csv(chart_type="Bar Chart")
 
-        # Line Chart
         if "Line Chart" in meta_learning_selected_visuals:
             load_meta_accuracy_csv(chart_type="Line Chart")
 
-        # Data Table
         if "Data Table" in meta_learning_selected_visuals:
             load_meta_accuracy_csv(chart_type="Table")
     else:
         st.info("No data selected to display in Meta Learning Results.")
 
-    # Second set of visualization options (Domain Adaptation Results)
     domain_adaptation_results_tab4 = st.multiselect(
         "Choose visualizations to display for Domain Adaptation Results",
         ["Bar Chart", "Line Chart", "Data Table"]
     )
 
     if domain_adaptation_results_tab4:
-        # Bar Chart
         if "Bar Chart" in domain_adaptation_results_tab4:
             load_accuracy_over_time_tab(chart_type="Bar Chart")
 
-        # Line Chart
         if "Line Chart" in domain_adaptation_results_tab4:
             load_accuracy_over_time_tab(chart_type="Line Chart")
 
-        # Data Table
         if "Data Table" in domain_adaptation_results_tab4:
             load_accuracy_over_time_tab(chart_type="Table")
     else:

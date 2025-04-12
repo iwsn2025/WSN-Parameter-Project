@@ -111,7 +111,7 @@ with tab1:
     st.header("**CAREER: Advancing Network Configuration and Runtime Adaptation Methods for Industrial Wireless Sensor-Actuator Networks**")
 
     st.subheader("**Team**")
-    st.write('<p>**Primary Investigator**: <a href="https://users.cs.fiu.edu/~msha/index.htm" target="_blank"> Mo Sha</a>, Associate Professor, Knight Foundation School of Computing and Information Sciences, Florida International University</p>', unsafe_allow_html=True)
+    st.write('<p><strong>Primary Investigator</strong>: <a href="https://users.cs.fiu.edu/~msha/index.htm" target="_blank"> Mo Sha</a>, Associate Professor, Knight Foundation School of Computing and Information Sciences, Florida International University</p>', unsafe_allow_html=True)
     st.write("**Undergraduate Students**: Mario Casas, Jean Cruz")
     st.write("**Alumni**: Xia Cheng, Junyang Shi, Di Mu, Jean Tonday Rodriguez, Yitian Chen, Xingjian Chen")
 

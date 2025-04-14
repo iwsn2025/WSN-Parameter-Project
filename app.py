@@ -239,36 +239,36 @@ with tab1:
     st.subheader("**Publications**")
 
     st.write('<p><strong>[C]</strong> Aitian Ma, Jean Tonday Rodriguez, Mo Sha, and Dongsheng Luo, <a href="https://users.cs.fiu.edu/~msha/publications/dcoss2025.pdf" target="_blank"> Sensorless Air Temperature Sensing Using LoRa Link Characteristics</a>, IEEE International Conference on Distributed Computing in Smart Systems and the Internet of Things (DCOSS-IoT 2025), June 2025. </p>', unsafe_allow_html=True)
-    st.write('<p><strong>[C]</strong> Aitian Ma and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/sac25.pdf" target="_blank"> WMN-CDA: Contrastive Domain Adaptation for Wireless Mesh Network Configuration</a>, ACM/SIGAPP Symposium On Applied Computing (SAC) Cyber-Physical Systems Track, March 2025, acceptance ratio: 5/21 = 23.8%.</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[C]</strong> Aitian Ma and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/sac25.pdf" target="_blank"> WMN-CDA: Contrastive Domain Adaptation for Wireless Mesh Network Configuration</a>, ACM/SIGAPP Symposium On Applied Computing (SAC) Cyber-Physical Systems Track, March 2025, acceptance ratio: 5/21 = 23.8%. [<a href="https://github.com/aitianma/WMN-CDA" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
     st.write('<p><strong>[C]</strong> Xia Cheng, Mo Sha, and Dong Chen, <a href="https://users.cs.fiu.edu/~msha/publications/ewsn2024.pdf" target="_blank"> Configuring Industrial Wireless Mesh Networks via Multi-Source Domain Adaptation</a>, ACM International Conference on Embedded Wireless Systems and Networks (EWSN), December 2024, acceptance ratio: 16/70 = 22.8%.</p>', unsafe_allow_html=True)
-    st.write('<p><strong>[J]</strong> Xia Cheng and Mo Sha, <a href="hhttps://users.cs.fiu.edu/~msha/publications/tosn2024.pdf" target="_blank"> MERA: Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks</a>, ACM Transactions on Sensor Networks, Vol. 20, Issue 4, pp. 97:1-97:24, July 2024. <a href="https://github.com/ml-wsan/Meta-Adaptation" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-    st.write('<p><strong>[J]</strong> Junyang Shi, Aitian Ma, Xia Cheng, Mo Sha, and Xi Peng, <a href="https://users.cs.fiu.edu/~msha/publications/ton24.pdf target="_blank"> Adapting Wireless Network Configuration from Simulation to Reality via Deep Learning based Domain Adaptation</a>, IEEE/ACM Transactions on Networking, Vol. 32, Issue 3, pp. 1983-1998, June 2024. <a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
+    st.write('<p><strong>[J]</strong> Xia Cheng and Mo Sha, <a href="hhttps://users.cs.fiu.edu/~msha/publications/tosn2024.pdf" target="_blank"> MERA: Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks</a>, ACM Transactions on Sensor Networks, Vol. 20, Issue 4, pp. 97:1-97:24, July 2024. [<a href="https://github.com/ml-wsan/Meta-Adaptation" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[J]</strong> Junyang Shi, Aitian Ma, Xia Cheng, Mo Sha, and Xi Peng, <a href="https://users.cs.fiu.edu/~msha/publications/ton24.pdf target="_blank"> Adapting Wireless Network Configuration from Simulation to Reality via Deep Learning based Domain Adaptation</a>, IEEE/ACM Transactions on Networking, Vol. 32, Issue 3, pp. 1983-1998, June 2024. [<a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
     st.write('<p><strong>[C]</strong> Aitian Ma, Jean Tonday Rodriguez, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icccn24.pdf" target="_blank"> Enabling Reliable Environmental Sensing with LoRa, Energy Harvesting, and Domain Adaptation</a>, IEEE International Conference on Computer Communications and Networks (ICCCN), July 2024, acceptance ratio: 47/157 = 29.9%.</p>', unsafe_allow_html=True)
     st.write('<p><strong>[C]</strong> Xu Zheng, Tianchun Wang, Wei Cheng, Aitian Ma, Haifeng Chen, Mo Sha, and Dongsheng Luo, <a href="https://users.cs.fiu.edu/~msha/publications/iclr24.pdf" target="_blank"> Parametric Augmentation for Time Series Contrastive Learning</a>, International Conference on Learning Representations (ICLR), May 2024, acceptance ratio: 2260/7262 = 31.1%.</p>', unsafe_allow_html=True)
-    st.write('<p><strong>[J]</strong> Xia Cheng, Junyang Shi, and Mo Sha, and Linke Guo, <a href="https://users.cs.fiu.edu/~msha/publications/ton23.pdf" target="_blank"> Revealing Smart Selective Jamming Attacks in WirelessHART Networks</a>, IEEE/ACM Transactions on Networking, Vol. 31, Issue 4, pp. 1611-1625, August, 2023. <a href="https://users.cs.fiu.edu/~msha/publications/ton23.pdf" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-    st.write('<p><strong>[C]</strong> Xia Cheng and Mo Sha, <a href= "https://users.cs.fiu.edu/~msha/publications/iwqos23.pdf" target="_blank"> Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks</a>, IEEE/ACM International Symposium on Quality of Service (IWQoS), June 2023, acceptance ratio: 62/264 = 23.5%. <a href="https://github.com/iiot-research/Selective-Jamming" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-    st.write('<p><strong>[C]</strong> Di Mu, Yitian Chen, Xingjian Chen, Junyang Shi, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/infocom23.pdf" target="_blank"> Enabling Direct Message Dissemination in Industrial Wireless Networks via Cross-Technology Communication</a>, IEEE International Conference on Computer Communications (INFOCOM), May 2023, acceptance ratio: 252/1312 = 19.2%. <a href="https://github.com/ml-wsan/Meta-Adaptation" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-    st.write('<p><strong>[J]</strong> Xia Cheng and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/tosn2022_2.pdf" target="_blank"> Autonomous Traffic-Aware Scheduling for Industrial Wireless Sensor-Actuator Networks</a>, ACM Transactions on Sensor Networks, Vol. 19, Issue 2, pp. 38:1-38:25, February 2023. <a href="https://github.com/iiot-research/Autonomous-Scheduling" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
+    st.write('<p><strong>[J]</strong> Xia Cheng, Junyang Shi, and Mo Sha, and Linke Guo, <a href="https://users.cs.fiu.edu/~msha/publications/ton23.pdf" target="_blank"> Revealing Smart Selective Jamming Attacks in WirelessHART Networks</a>, IEEE/ACM Transactions on Networking, Vol. 31, Issue 4, pp. 1611-1625, August, 2023. [<a href="https://users.cs.fiu.edu/~msha/publications/ton23.pdf" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[C]</strong> Xia Cheng and Mo Sha, <a href= "https://users.cs.fiu.edu/~msha/publications/iwqos23.pdf" target="_blank"> Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks</a>, IEEE/ACM International Symposium on Quality of Service (IWQoS), June 2023, acceptance ratio: 62/264 = 23.5%. [<a href="https://github.com/iiot-research/Selective-Jamming" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[C]</strong> Di Mu, Yitian Chen, Xingjian Chen, Junyang Shi, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/infocom23.pdf" target="_blank"> Enabling Direct Message Dissemination in Industrial Wireless Networks via Cross-Technology Communication</a>, IEEE International Conference on Computer Communications (INFOCOM), May 2023, acceptance ratio: 252/1312 = 19.2%. [<a href="https://github.com/ml-wsan/Meta-Adaptation" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[J]</strong> Xia Cheng and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/tosn2022_2.pdf" target="_blank"> Autonomous Traffic-Aware Scheduling for Industrial Wireless Sensor-Actuator Networks</a>, ACM Transactions on Sensor Networks, Vol. 19, Issue 2, pp. 38:1-38:25, February 2023. [<a href="https://github.com/iiot-research/Autonomous-Scheduling" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
     st.write('<p><strong>[C]</strong> Qi Li, Keyang Yu, Dong Chen, Mo Sha, and Long Cheng, <a href="https://users.cs.fiu.edu/~msha/publications/cns22.pdf" target="_blank"> TrafficSpy: Disaggregating VPN-encrypted IoT Network Traffic for User Privacy Inference</a>, IEEE Conference on Communications and Network Security (CNS), October 2022, acceptance ratio: 43/122 = 35.2%. </p>', unsafe_allow_html=True)
-    st.write('<p><strong>[C]</strong> Junyang Shi and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icccn22.pdf" target="_blank"> Localizing Campus Shuttles from One Single Base Station Using LoRa Link Characteristics</a>, IEEE International Conference on Computer Communications and Networks (ICCCN), July 2022, acceptance ratio: 39/130=30.0%.<a href="https://github.com/junyang28/lorashuttlebus" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-    st.write('<p><strong>[J]</strong> Junyang Shi, Xingjian Chen, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/tosn2022.pdf" target="_blank"> Enabling Cross-technology Communication from LoRa to ZigBee in the 2.4 GHz Band</a>, ACM Transactions on Sensor Networks, Vol. 18, Issue 2, pp. 21:1-21:23, May 2022. <a href="https://github.com/junyang28/paper-ctclora" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-    st.write('<p><strong>[J]</strong> Junyang Shi, Di Mu, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/tosn21.pdf" target="_blank"> Enabling Cross-technology Communication from LoRa to ZigBee via Payload Encoding in Sub-1 GHz Bands</a>, ACM Transactions on Sensor Networks, Vol. 18, Issue 1, pp. 6:1-6:26, February 2022. <a href="https://github.com/junyang28/paper-lorabee" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-    st.write('<p><strong>[J]</strong> Xiao Cheng and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icnp21.pdf" target="_blank">  ATRIA: Autonomous Traffic-Aware Transmission Scheduling for Industrial Wireless Sensor-Actuator Networks</a>, IEEE International Conference on Network Protocols (ICNP), November 2021, acceptance ratio: 38/154 = 24.6%. <a href="https://github.com/iiot-research/Autonomous-Scheduling" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
-    st.write('<p><strong>[J]</strong> Junyang Shi, Mo Sha, and Xi Peng, <a href="https://users.cs.fiu.edu/~msha/publications/nsdi21.pdf" target="_blank"> Adapting Wireless Mesh Network Configuration from Simulation to Reality via Deep Learning based Domain Adaptation</a>, USENIX Symposium on Networked Systems Design and Implementation (NSDI), April 2021, acceptance ratio (fall deadline): 40/255 = 15.6%. <a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">[source code and data]</a></p>', unsafe_allow_html=True)
+    st.write('<p><strong>[C]</strong> Junyang Shi and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icccn22.pdf" target="_blank"> Localizing Campus Shuttles from One Single Base Station Using LoRa Link Characteristics</a>, IEEE International Conference on Computer Communications and Networks (ICCCN), July 2022, acceptance ratio: 39/130=30.0%. [<a href="https://github.com/junyang28/lorashuttlebus" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[J]</strong> Junyang Shi, Xingjian Chen, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/tosn2022.pdf" target="_blank"> Enabling Cross-technology Communication from LoRa to ZigBee in the 2.4 GHz Band</a>, ACM Transactions on Sensor Networks, Vol. 18, Issue 2, pp. 21:1-21:23, May 2022. [<a href="https://github.com/junyang28/paper-ctclora" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[J]</strong> Junyang Shi, Di Mu, and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/tosn21.pdf" target="_blank"> Enabling Cross-technology Communication from LoRa to ZigBee via Payload Encoding in Sub-1 GHz Bands</a>, ACM Transactions on Sensor Networks, Vol. 18, Issue 1, pp. 6:1-6:26, February 2022. [<a href="https://github.com/junyang28/paper-lorabee" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[J]</strong> Xiao Cheng and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icnp21.pdf" target="_blank">  ATRIA: Autonomous Traffic-Aware Transmission Scheduling for Industrial Wireless Sensor-Actuator Networks</a>, IEEE International Conference on Network Protocols (ICNP), November 2021, acceptance ratio: 38/154 = 24.6%. [<a href="https://github.com/iiot-research/Autonomous-Scheduling" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
+    st.write('<p><strong>[J]</strong> Junyang Shi, Mo Sha, and Xi Peng, <a href="https://users.cs.fiu.edu/~msha/publications/nsdi21.pdf" target="_blank"> Adapting Wireless Mesh Network Configuration from Simulation to Reality via Deep Learning based Domain Adaptation</a>, USENIX Symposium on Networked Systems Design and Implementation (NSDI), April 2021, acceptance ratio (fall deadline): 40/255 = 15.6%. [<a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
 
 # Gap Analysis Tab
 with tab2:
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
-    # Reordered dataset: simulation-to-real first
+    # Updated dataset: simulation-to-simulation → simulation-to-real → physical-to-physical
     sim_val_acc = [
+        'Train: Simulation, Test: Simulation (Dˢ → Dˢ)',
         'Train: Simulation, Test: Physical (Dˢ → Dᵖ)',
-        'Train: Physical, Test: Simulation (Dᵖ → Dˢ)',
         'Train: Physical, Test: Physical (Dᵖ → Dᵖ)'
     ]
 
-    # Corresponding accuracy values (example from DNN model)
-    acc_values = [0.2570, 0.7983, 0.8892]
+    # Hypothetical values based on domain gap research (higher control to higher realism)
+    acc_values = [0.9500, 0.2570, 0.8892]
 
     # Create DataFrame
     gap_df = pd.DataFrame({
@@ -302,7 +302,11 @@ with tab2:
                     'Prediction Accuracy': 'Prediction Accuracy'
                 },
                 color='Training and testing on different data sets',
-                color_discrete_sequence=['#ADD8E6', '#FFA500', '#C0C0C0']  # Light Blue, Orange, Gray
+                color_discrete_sequence=['#87CEEB', '#FFA500', '#A9A9A9']  # Sky Blue, Orange, Dark Gray
+            )
+            fig.update_layout(
+                bargap=0.4,  # increase gap to make bars thinner
+                xaxis={'categoryorder': 'array', 'categoryarray': sim_val_acc}
             )
             st.plotly_chart(fig)
 
@@ -332,7 +336,6 @@ with tab2:
         if "Data Table" in single_source_selected_visuals:
             st.subheader("Gap Analysis Table")
             st.dataframe(gap_df)
-
     else:
         st.info("No data selected to display.")
 
@@ -355,16 +358,84 @@ with tab3:
                  'IEEE/ACM Transactions on Networking, Vol. 32, Issue 3, pp. 1983-1998, June 2024. '
                  '[<a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
 
+        # 🟦 Single Source Visuals
+        single_source_visuals = st.multiselect(
+            "Choose NSDI visualizations",
+            ["Bar Chart", "Line Chart", "Table"],
+            key="single_source"
+        )
+
+        if single_source_visuals:
+            if "Bar Chart" in single_source_visuals:
+                fig = px.bar(data, x='Shots', y='Single Source Accuracy',
+                             title="Single Source Prediction Accuracy (Bar)",
+                             labels={
+                                 'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
+                                 'Single Source Accuracy': 'Prediction Accuracy'
+                             },
+                             range_y=[0, 1])
+                st.plotly_chart(fig)
+
+            if "Line Chart" in single_source_visuals:
+                fig = px.line(data, x='Shots', y='Single Source Accuracy', markers=True,
+                              title="Single Source Prediction Accuracy (Line)",
+                              labels={
+                                  'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
+                                  'Single Source Accuracy': 'Prediction Accuracy'
+                              })
+                st.plotly_chart(fig)
+
+            if "Table" in single_source_visuals:
+                st.subheader("Single Source Table")
+                st.dataframe(data[['Shots', 'Single Source Accuracy']])
+
         st.write("(2) Using contrastive domain adaptation to close the gap.")
         st.write('<p> Aitian Ma and Mo Sha, '
                  '<a href="https://users.cs.fiu.edu/~msha/publications/sac25.pdf" target="_blank">'
                  'WMN-CDA: Contrastive Domain Adaptation for Wireless Mesh Network Configuration</a>, '
                  'ACM/SIGAPP Symposium On Applied Computing (SAC) Cyber-Physical Systems Track, March 2025</p>', unsafe_allow_html=True)
 
+        contrastive_domain_visuals = st.multiselect(
+            "Choose SAC visualizations",
+            ["Bar Chart", "Line Chart", "Table"],
+            key="contrastive_source"
+        )
+
         st.write("(3) Employing multi-source domain adaptation to close the gap.")
         st.write('<p>Xia Cheng, Mo Sha, and Dong Chen, '
                  '<a href="https://users.cs.fiu.edu/~msha/publications/ewsn2024.pdf" target="_blank">Configuring Industrial Wireless Mesh Networks via Multi-Source Domain Adaptation</a>, '
                  'ACM International Conference on Embedded Wireless Systems and Networks (EWSN), December 2024</p>', unsafe_allow_html=True)
+
+        # 🟩 Multi Source Visuals
+        multi_source_visuals = st.multiselect(
+            "Choose EWSN visualizations",
+            ["Bar Chart", "Line Chart", "Table"],
+            key="multi_source"
+        )
+
+        if multi_source_visuals:
+            if "Bar Chart" in multi_source_visuals:
+                fig = px.bar(data, x='Shots', y='Multi Source Accuracy',
+                             title="Multi Source Prediction Accuracy (Bar)",
+                             labels={
+                                 'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
+                                 'Multi Source Accuracy': 'Prediction Accuracy'
+                             },
+                             range_y=[0, 1])
+                st.plotly_chart(fig)
+
+            if "Line Chart" in multi_source_visuals:
+                fig = px.line(data, x='Shots', y='Multi Source Accuracy', markers=True,
+                              title="Multi Source Prediction Accuracy (Line)",
+                              labels={
+                                  'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
+                                  'Multi Source Accuracy': 'Prediction Accuracy'
+                              })
+                st.plotly_chart(fig)
+
+            if "Table" in multi_source_visuals:
+                st.subheader("Multi Source Table")
+                st.dataframe(data[['Shots', 'Multi Source Accuracy']])
 
         # 🟪 Combined Source Visualizations
         st.markdown("**See the comparisons among different solutions.**")
@@ -456,16 +527,16 @@ with tab4:
     st.subheader("**Using domain adaptation to adapt the network configuration at runtime.**")
     st.write('<p>Xia Cheng and Mo Sha, '
              '<a href="https://users.cs.fiu.edu/~msha/publications/iwqos23.pdf" target="_blank">'
-             'Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks, '
+             'Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks</a>, '
              'IEEE/ACM International Symposium on Quality of Service (IWQoS), June 2023. '
-             '<a href="https://github.com/iiot-research/Selective-Jamming" target="_blank">'
-             '[source code and data]</a></p>', unsafe_allow_html=True)
+             '[<a href="https://github.com/iiot-research/Selective-Jamming" target="_blank">'
+             'source code and data</a>]</p>', unsafe_allow_html=True)
     st.write('<p>Xia Cheng and Mo Sha, '
              '<a href="hhttps://users.cs.fiu.edu/~msha/publications/tosn2024.pdf" target="_blank">'
-             'MERA: Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks, '
+             'MERA: Meta-Learning Based Runtime Adaptation for Industrial Wireless Sensor-Actuator Networks</a>, '
              'ACM Transactions on Sensor Networks, Vol. 20, Issue 4, pp. 97:1-97:24, July 2024. '
-             'https://github.com/ml-wsan/Meta-Adaptation" target="_blank">'
-             '[source code and data]</a></p>', unsafe_allow_html=True)
+             '[<a href="https://github.com/ml-wsan/Meta-Adaptation" target="_blank">'
+             'source code and data</a>]</p>', unsafe_allow_html=True)
 
     meta_learning_selected_visuals = st.multiselect(
         "Choose visualizations to display for Meta Learning Results",

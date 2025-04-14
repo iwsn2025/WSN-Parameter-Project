@@ -20,6 +20,7 @@ def generate_scatter_data():
         'Real Prediction': np.random.rand(50) * 0.2 + 0.75
     })
 
+
 # Function to load experiment data from the CSV file for main-SingleSource and main-MultiSource
 @st.cache_data
 def load_experiment_data():
@@ -46,6 +47,41 @@ def load_experiment_data():
         # Catch any errors and display them
         st.error(f"Error loading CSV: {e}")
         return None
+
+
+# Function to read the contrastive domain log data (with caching)
+@st.cache_data
+def read_contrastive_log(path="contrastive_log.txt"):
+    epochs = []
+    accuracies = []
+    with open(path, 'r') as f:
+        for line in f:
+            if "epoch" in line.lower() and "accuraccy" in line.lower():
+                parts = line.strip().split(":")
+                epoch = parts[0].split()[-1]
+                acc = float(parts[-1])
+                epochs.append(f"Epoch {epoch}")
+                accuracies.append(acc)
+    return pd.DataFrame({"Epoch": epochs, "Prediction Accuracy": accuracies})
+
+
+# Function to display the contrastive domain chart
+def contrastive_domain_chart():
+    # Fetching contrastive domain training log
+    df_contrastive = read_contrastive_log()
+
+    st.subheader("Contrastive Domain: Teacher Model Accuracy by Epoch")
+    fig = px.bar(
+        df_contrastive,
+        x="Epoch",
+        y="Prediction Accuracy",
+        color="Epoch",
+        text_auto=True,
+        range_y=[0, 1],
+        labels={"Epoch": "Training Epoch", "Prediction Accuracy": "Accuracy"},
+        title="Teacher Model Accuracy during Contrastive Domain Training"
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 # Function to load experiment data for main-performance-degradation
 @st.cache_data
@@ -82,6 +118,7 @@ def load_accuracy_over_time_tab(chart_type):
                 template="plotly_white"
             )
             fig.update_xaxes(
+                type="category",  # Ensure uniform spacing on the x-axis
                 tickvals=[0, 1, 2, 4, 8, 16, 32, 64, 128],
                 title_font=dict(size=14),
                 tickfont=dict(size=12)
@@ -90,7 +127,7 @@ def load_accuracy_over_time_tab(chart_type):
             fig.update_layout(
                 legend_title_text='Accuracy',
                 title_font_size=16,
-                title_x=0.5,
+                title_x=0.45,
                 bargap=0.2,
                 height=500,
                 width=800
@@ -99,6 +136,7 @@ def load_accuracy_over_time_tab(chart_type):
 
     except FileNotFoundError:
         st.error("Accuracy data not found. Please run the experiment script to generate accuracy_over_time.csv.")
+
 
 @st.cache_data
 def load_meta_accuracy_csv(chart_type):
@@ -157,6 +195,7 @@ def load_meta_accuracy_csv(chart_type):
                 )
 
             fig.update_xaxes(
+                type="category",  # Ensure uniform spacing on the x-axis
                 tickvals=[0, 1, 2, 4, 8, 16, 32, 64, 128],
                 title_font=dict(size=14),
                 tickfont=dict(size=12)
@@ -165,12 +204,16 @@ def load_meta_accuracy_csv(chart_type):
             fig.update_layout(
                 legend_title_text='Method',
                 title_font_size=16,
-                title_x=0.5,
+                title_x=0.4,
                 bargap=0.2,
                 height=500,
                 width=800
             )
             st.plotly_chart(fig, use_container_width=True)
+
+    except FileNotFoundError:
+        st.error("CSV file not found. Please ensure the file 'meta_accuracy_over_time.csv' is in the correct location.")
+
 
     except FileNotFoundError:
         st.error("CSV file not found. Please ensure the file 'meta_accuracy_over_time.csv' is in the correct location.")
@@ -368,7 +411,7 @@ with tab3:
         if single_source_visuals:
             if "Bar Chart" in single_source_visuals:
                 fig = px.bar(data, x='Shots', y='Single Source Accuracy',
-                             title="Single Source Prediction Accuracy (Bar)",
+                             title="NSDI Prediction Accuracy (Bar)",
                              labels={
                                  'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
                                  'Single Source Accuracy': 'Prediction Accuracy'
@@ -378,7 +421,7 @@ with tab3:
 
             if "Line Chart" in single_source_visuals:
                 fig = px.line(data, x='Shots', y='Single Source Accuracy', markers=True,
-                              title="Single Source Prediction Accuracy (Line)",
+                              title="NSDI Prediction Accuracy (Line)",
                               labels={
                                   'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
                                   'Single Source Accuracy': 'Prediction Accuracy'
@@ -386,7 +429,7 @@ with tab3:
                 st.plotly_chart(fig)
 
             if "Table" in single_source_visuals:
-                st.subheader("Single Source Table")
+                st.subheader("NSDI Source Table")
                 st.dataframe(data[['Shots', 'Single Source Accuracy']])
 
         st.write("(2) Using contrastive domain adaptation to close the gap.")
@@ -395,11 +438,62 @@ with tab3:
                  'WMN-CDA: Contrastive Domain Adaptation for Wireless Mesh Network Configuration</a>, '
                  'ACM/SIGAPP Symposium On Applied Computing (SAC) Cyber-Physical Systems Track, March 2025</p>', unsafe_allow_html=True)
 
+        # 🟪 Contrastive Domain Visuals
         contrastive_domain_visuals = st.multiselect(
             "Choose SAC visualizations",
             ["Bar Chart", "Line Chart", "Table"],
-            key="contrastive_source"
+            key="contrastive_domain"
         )
+
+        # Generate synthetic or load real data
+        contrastive_data = pd.DataFrame({
+            "Shots": [0, 1, 2, 4, 8, 16, 32, 64, 128],
+            "CL-Method1": [0.55, 0.61, 0.66, 0.71, 0.75, 0.78, 0.80, 0.83, 0.85],
+            "CL-Method2": [0.53, 0.59, 0.64, 0.69, 0.74, 0.77, 0.79, 0.82, 0.84]
+        })
+
+        if contrastive_domain_visuals:
+            if "Bar Chart" in contrastive_domain_visuals:
+                contrastive_melted = contrastive_data.melt(
+                    id_vars='Shots', var_name='Method', value_name='Prediction Accuracy'
+                )
+                fig = px.bar(
+                    contrastive_melted, x='Shots', y='Prediction Accuracy', color='Method',
+                    barmode='group',
+                    title="[SAC] Contrastive Domain Adaptation Accuracy (Bar)",
+                    labels={
+                        'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
+                        'Prediction Accuracy': 'Prediction Accuracy'
+                    },
+                    range_y=[0, 1]
+                )
+
+                # Adjust x-axis to ensure uniform intervals
+                fig.update_layout(
+                    xaxis=dict(type='category'),  # Set x-axis as categorical for uniform spacing
+                    xaxis_title='Amount of Physical Data Used for Training (No. of Shots)',
+                    yaxis_title='Prediction Accuracy'
+                )
+
+                st.plotly_chart(fig)
+
+            if "Line Chart" in contrastive_domain_visuals:
+                contrastive_melted = contrastive_data.melt(
+                    id_vars='Shots', var_name='Method', value_name='Prediction Accuracy'
+                )
+                fig = px.line(
+                    contrastive_melted, x='Shots', y='Prediction Accuracy', color='Method', markers=True,
+                    title="[SAC] Contrastive Domain Adaptation Accuracy (Line)",
+                    labels={
+                        'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
+                        'Prediction Accuracy': 'Prediction Accuracy'
+                    }
+                )
+                st.plotly_chart(fig)
+
+            if "Table" in contrastive_domain_visuals:
+                st.subheader("Contrastive Domain Table")
+                st.dataframe(contrastive_data)
 
         st.write("(3) Employing multi-source domain adaptation to close the gap.")
         st.write('<p>Xia Cheng, Mo Sha, and Dong Chen, '
@@ -416,7 +510,7 @@ with tab3:
         if multi_source_visuals:
             if "Bar Chart" in multi_source_visuals:
                 fig = px.bar(data, x='Shots', y='Multi Source Accuracy',
-                             title="Multi Source Prediction Accuracy (Bar)",
+                             title="EWSN Prediction Accuracy (Bar)",
                              labels={
                                  'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
                                  'Multi Source Accuracy': 'Prediction Accuracy'
@@ -426,7 +520,7 @@ with tab3:
 
             if "Line Chart" in multi_source_visuals:
                 fig = px.line(data, x='Shots', y='Multi Source Accuracy', markers=True,
-                              title="Multi Source Prediction Accuracy (Line)",
+                              title="EWSN Prediction Accuracy (Line)",
                               labels={
                                   'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
                                   'Multi Source Accuracy': 'Prediction Accuracy'
@@ -438,21 +532,42 @@ with tab3:
                 st.dataframe(data[['Shots', 'Multi Source Accuracy']])
 
         # 🟪 Combined Source Visualizations
-        st.markdown("**See the comparisons among different solutions.**")
         combined_source_selected_visuals = st.multiselect(
-            "Choose visualizations to display results",
+            "**See the comparisons among different solutions.**",
             [
                 "Combined Bar Chart", "Combined Line Chart", "Combined Table",
             ]
         )
 
-        data_melted = data.melt(id_vars=['Shots'],
-                                var_name='Source Type',
-                                value_name='Prediction Accuracy')
+        # Merge 'data' with 'contrastive_data'
+        # Step 1: Merge the datasets on 'Shots'
+        merged_data = pd.merge(data, contrastive_data, on='Shots', how='outer')
 
+        # Step 2: Reshape the data into a long format for easy plotting
+        combined_melted = merged_data.melt(
+            id_vars=['Shots'],  # Keep 'Shots' as the id
+            value_vars=['Single Source Accuracy', 'Multi Source Accuracy', 'CL-Method1', 'CL-Method2'],
+            # Columns to melt
+            var_name='Source Type',  # New column for the source types
+            value_name='Prediction Accuracy'  # The actual values for the plot
+        )
+
+        # Combined Source Visualizations
         if combined_source_selected_visuals:
             if "Combined Bar Chart" in combined_source_selected_visuals:
-                fig = px.bar(data_melted, x='Shots', y='Prediction Accuracy',
+                # Step 1: Merge 'data' with 'contrastive_data'
+                merged_data = pd.merge(data, contrastive_data, on='Shots', how='outer')
+
+                # Adjust labels for clarity
+                combined_melted['Source Type'] = combined_melted['Source Type'].map({
+                    'Single Source Accuracy': 'Single Source',
+                    'Multi Source Accuracy': 'Multi Source',
+                    'CL-Method1': 'Contrastive Domain Method 1',
+                    'CL-Method2': 'Contrastive Domain Method 2'
+                })
+
+                # Grouped Bar Chart
+                fig = px.bar(combined_melted, x='Shots', y='Prediction Accuracy',
                              color='Source Type', barmode='group',
                              title="Prediction Accuracy Comparison (Bar)",
                              labels={
@@ -460,26 +575,56 @@ with tab3:
                                  'Prediction Accuracy': 'Prediction Accuracy'
                              },
                              range_y=[0, 1])
+
+                # Set the x-axis as categorical to avoid unexpected continuous behavior
+                fig.update_layout(
+                    xaxis=dict(type='category'),  # Treat x-axis as categorical
+                    xaxis_title='Amount of Physical Data Used for Training (No. of Shots)',
+                    yaxis_title='Prediction Accuracy'
+                )
+
                 st.plotly_chart(fig)
 
             if "Combined Line Chart" in combined_source_selected_visuals:
-                fig = px.line(data_melted, x='Shots', y='Prediction Accuracy',
+                # Line Chart
+                fig = px.line(combined_melted, x='Shots', y='Prediction Accuracy',
                               color='Source Type', markers=True,
                               title="Prediction Accuracy Comparison (Line)",
                               labels={
                                   'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
                                   'Prediction Accuracy': 'Prediction Accuracy'
                               })
+
+                # Set the x-axis as categorical to avoid unexpected continuous behavior
+                fig.update_layout(
+                    xaxis=dict(type='category'),  # Treat x-axis as categorical
+                    xaxis_title='Amount of Physical Data Used for Training (No. of Shots)',
+                    yaxis_title='Prediction Accuracy'
+                )
+
                 st.plotly_chart(fig)
 
             if "Combined Table" in combined_source_selected_visuals:
+
+                # Step 2: Create separate columns for each source type
+                combined_data_table = merged_data[
+                    ['Shots', 'Single Source Accuracy', 'Multi Source Accuracy', 'CL-Method1', 'CL-Method2']]
+
+                # Rename the columns for clarity
+                combined_data_table = combined_data_table.rename(columns={
+                    'Single Source Accuracy': 'Single Source Accuracy',
+                    'Multi Source Accuracy': 'Multi Source Accuracy',
+                    'CL-Method1': 'Contrastive Domain Method 1 Accuracy',
+                    'CL-Method2': 'Contrastive Domain Method 2 Accuracy'
+                })
+
+                # Display the table with separate columns
                 st.subheader("Combined Source Table")
-                st.dataframe(data_melted)
+                st.dataframe(combined_data_table)
         else:
             st.info("No data selected to display in Combined Source Results.")
     else:
         st.error("No valid data available to display.")
-
 
 # Meta Learning Tab
 with tab4:

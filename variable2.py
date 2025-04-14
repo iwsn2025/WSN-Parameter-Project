@@ -1,0 +1,15 @@
+'''
+Define some value here
+'''
+
+LEARNING_RATE = 0.01
+MOMEMTUN = 0.05
+L2_WEIGHT = 0.003
+DROPOUT = 0.2
+N_EPOCH = 1
+BATCH_SIZE = [64, 64]
+LAMBDA = 1
+GAMMA = 10 ^ 3
+
+
+

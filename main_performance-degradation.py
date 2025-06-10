@@ -6,9 +6,12 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+from tqdm import tqdm
 import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
 import mmd
 from variable import *
 import random
@@ -276,13 +279,7 @@ def exp(shot=5,shuffle=False,epoch=500,sim=True):
             test_accs.append(test_acc)
             print("----Accuracy: ",test_acc)
 
-    # Prepare and save results to CSV
-    days = np.power(2, range(2, 2 + len(test_accs)))
-    df_results = pd.DataFrame({
-        "Days Passed": days,
-        "Accuracy": test_accs
-    })
-    df_results.to_csv("accuracy_over_time.csv", index=False)
+
 
     return test_accs
 

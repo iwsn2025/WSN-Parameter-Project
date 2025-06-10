@@ -12,15 +12,12 @@ from sklearn.model_selection import train_test_split
 import mmd
 from variable import *
 import random
-
 from matplotlib import pyplot as plt
 import warnings
 
 warnings.filterwarnings("ignore")
 
-
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# DEVICE = 'cpu'
 
 def mmd_loss(x_src, x_tar):
     return mmd.mix_rbf_mmd2(x_src, x_tar, [GAMMA])
@@ -39,238 +36,190 @@ class DaNN(nn.Module):
         x3 = self.layer_hidden(x2)
         x4 = self.relu(x3)
         y1 = self.layer_hidden2(x4)
-        y = F.log_softmax(y1)
-        y2 = F.log_softmax(y1/10)
-        return y, x3, y2    #softmax(output) and mmd and softmax(output/T)
+        y = F.log_softmax(y1, dim=1)
+        y2 = F.log_softmax(y1 / 10, dim=1)
+        return y, x3, y2
 
 torch.manual_seed(1)
 
-
-def exp(shot=5,shuffle=False,epoch=500,sim=True):
-
-
+def exp(shot=5, shuffle=False, epoch=500, sim=True):
+    # Load simulation data
     dataset = pd.read_csv("simulation.csv", sep=',')
-    X = np.array(dataset.drop(['A', 'C', 'P', 'LA'], axis=1))
-    X = np.float32(X)
+    X = np.array(dataset.drop(['A', 'C', 'P', 'LA'], axis=1)).astype(np.float32)
     scaler = StandardScaler().fit(X)
     X = scaler.transform(X)
-    y = np.array(dataset['LA'])
-    y = np.float32(y)
-    Sy = torch.from_numpy(y).type(torch.LongTensor).to(DEVICE)
+    y = dataset['LA'].values.astype(np.float32)
     Sx = torch.from_numpy(X).to(DEVICE)
-    # print(Sx.shape, Sy.shape)
+    Sy = torch.from_numpy(y).long().to(DEVICE)
 
-    dataset2 = pd.read_csv("sample.csv", sep=',')
-    X2 = np.array(dataset2.drop(['A', 'C', 'P', 'LA'], axis=1))
-    X2 = np.float32(X2)
-    X2 = scaler.transform(X2)
-    y2 = np.array(dataset2['LA'])
-    y2 = np.float32(y2)
-    Tx = torch.from_numpy(X2).to(DEVICE)
-    Ty = torch.from_numpy(y2).type(torch.LongTensor).to(DEVICE)
-    # print(Tx.shape, Ty.shape)
-
+    # Load physical data
     dataset3 = pd.read_csv("realworlddata.csv", sep=',')
-    X3 = np.array(dataset3.drop(['A', 'C', 'P', 'LA'], axis=1))
-    X3 = np.float32(X3)
-    X3 = scaler.transform(X3)
-    y3 = np.array(dataset3['LA'])
-    y3 = np.float32(y3)
-    X_train1, X_test, y_train1, y_test = train_test_split(X3, y3, test_size = 0.4, random_state=42)
+    X3 = scaler.transform(np.array(dataset3.drop(['A', 'C', 'P', 'LA'], axis=1)).astype(np.float32))
+    y3 = dataset3['LA'].values.astype(np.float32)
+    X_train1, X_test, y_train1, y_test = train_test_split(X3, y3, test_size=0.2, random_state=42)
+    Tx = torch.from_numpy(X_train1).to(DEVICE)
+    Ty = torch.from_numpy(y_train1).long().to(DEVICE)
     Tx_test = torch.from_numpy(X_test).to(DEVICE)
-    Ty_test = torch.from_numpy(y_test).type(torch.LongTensor).to(DEVICE)
+    Ty_test = torch.from_numpy(y_test).long().to(DEVICE)
 
     if shuffle:
-
-        # Create an array of indices and shuffle them
-        ids = np.arange(0, len(Tx_test))
+        ids = np.arange(len(Tx_test))
         random.shuffle(ids)
-
-        # Split the indices into validation and test sets
-        id_val = ids[:int(len(Tx_test) / 2)]
-        id_test = ids[int(len(Tx_test) / 2):]
-
-        Tx_val = Tx_test[id_val].to(DEVICE)
-        Ty_val = Ty_test[id_val].to(DEVICE)
-
-        Tx_test = Tx_test[id_test].to(DEVICE)
-        Ty_test = Ty_test[id_test].to(DEVICE)
-
+        id_val = ids[:len(Tx_test)//2]
+        id_test = ids[len(Tx_test)//2:]
+        Tx_val = Tx_test[id_val]
+        Ty_val = Ty_test[id_val]
+        Tx_test = Tx_test[id_test]
+        Ty_test = Ty_test[id_test]
     else:
-        Tx_val = Tx_test[:int(len(Tx_test)/2)].to(DEVICE)
-        Ty_val = Ty_test[:int(len(Ty_test)/2)].to(DEVICE)
+        Tx_val = Tx_test[:len(Tx_test)//2]
+        Ty_val = Ty_test[:len(Tx_test)//2]
+        Tx_test = Tx_test[len(Tx_test)//2:]
+        Ty_test = Ty_test[len(Ty_test)//2:]
 
-        Tx_test = Tx_test[int(len(Tx_test)/2):].to(DEVICE)
-        Ty_test = Ty_test[int(len(Ty_test)/2):].to(DEVICE)
-
-    # print(Tx_test.shape, Ty_test.shape)
-
-    #Teacher model
-    teacher = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88)
-    teacher = teacher.to(DEVICE)
-    optimizer = optim.SGD(
-        teacher.parameters(),
-        lr=LEARNING_RATE,
-        momentum=MOMENTUM,
-        weight_decay=L2_WEIGHT
-    )
-    optimizer = optim.Adam(teacher.parameters(), lr=0.1)
+    # Teacher model
+    teacher = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88).to(DEVICE)
+    optimizer = optim.Adam(teacher.parameters(), lr=0.0005)
     criterion = nn.CrossEntropyLoss()
 
+    # Train teacher
+    for e in range(1, 301):
+        teacher.train()
+        if sim:
+            y_pred, _, _ = teacher(Sx)
+            loss = criterion(y_pred, Sy)
+        else:
+            y_pred, _, _ = teacher(Tx)
+            loss = criterion(y_pred, Ty)
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+    # Evaluate teacher on simulation data
     if sim:
-
-        for e in range(1, 100 + 1):
-            teacher.train()
-            y_pred, _, _ = teacher.forward(Sx)
-            loss_c = criterion(y_pred, Sy)
-            optimizer.zero_grad()
-            loss_c.backward()
-            optimizer.step()
-
-            count = 0
-            a = np.argmax(y_pred.detach().cpu().numpy(), axis = 1)
-            b = Sy.detach().cpu().numpy()
-            for it, it2 in zip(a, b):
-                if it == it2:
-                    count = count + 1
-        # print(count/y_pred.shape[0])
-
-
-
-    #Student model
-    student = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88)
-    student = student.to(DEVICE)
-    student.load_state_dict(teacher.state_dict())
-    #optimizer2 = optim.Adam(student.parameters(), lr=0.1)
-    optimizer2 = optim.SGD(
-        student.parameters(),
-        lr=LEARNING_RATE,
-        momentum=MOMENTUM,
-        weight_decay=L2_WEIGHT
-    )
-    criterion2 = nn.CrossEntropyLoss()
-
-
-    max_val_accuracy=0
-    max_test_accuracy=0
-
-    for e in range(1, epoch + 1):
-        temp1 = 10
-        temp2 = 88*shot
-        for i in range(temp1):
-            data = Sx[i*temp2:i*temp2+temp2]
-            target = Sy[i*temp2:i*temp2+temp2]
-
-            x_tar = Tx[0:temp2]
-            y_target = Ty[0:temp2]
-
-            y_src, x_src_mmd, raw_y1 = teacher(data)
-            y_tar, x_tar_mmd, raw_y2 = student(data)
-
-            tt = np.argmax(raw_y1.detach().cpu().numpy(), axis = 1)
-            tt = torch.from_numpy(tt).to(DEVICE)
-            loss_high_t = criterion(raw_y2, tt)
-            #print(raw_y1.shape, raw_y2.shape, target.shape)
-            #print(tt.shape, tt.dtype)
-
-
-            #loss_c1 = criterion(y_src, target)
-            #loss_mmd = mmd_loss(x_src_mmd, x_tar_mmd) + loss_high_t
-            #loss = loss_c1 + LAMBDA * loss_mmd
-            #optimizer.zero_grad()
-            #optimizer2.zero_grad()
-            loss_high_t.backward()
-            #loss_mmd.backward()
-            #optimizer.step()
-            #optimizer2.zero_grad()
-            #loss_mmd.backward()
-            optimizer2.step()
-
-            y_src, x_src_mmd, y_src_soft = teacher(x_tar)
-            y_tar, x_tar_mmd, y_tar_soft = student(x_tar)
-            loss_mmd = LAMBDA * mmd_loss(x_src_mmd, x_tar_mmd)
-            optimizer.zero_grad()
-            optimizer2.zero_grad()
-            loss_mmd.backward()
-            optimizer.step()
-            optimizer2.step()
-
-            #optimizer2.zero_grad()
-            #loss_soft = criterion(y_tar_soft, y_src_soft)
-            #loss_soft.backward()
-            #optimizer2.step()
-
-            optimizer2.zero_grad()
-            y_tar, _, _ = student(x_tar)
-            loss_c2 = criterion(y_tar, y_target)
-            loss_c2.backward()
-            optimizer2.step()
-
         with torch.no_grad():
-            y_pred, _, _ = student.forward(Tx_val)
-            count = 0
-            a = np.argmax(y_pred.detach().cpu().numpy(), axis = 1)
-            b = Ty_val.detach().cpu().numpy()
-            for it, it2 in zip(a, b):
-                if it == it2:
-                    count = count + 1
-            # print(count/y_pred.shape[0])
-            # print("epoch %d: accuracy "%(e),count/y_pred.shape[0])
-            if count/y_pred.shape[0]>max_val_accuracy:
-                max_val_accuracy = count/y_pred.shape[0]
+            y_pred, _, _ = teacher(Sx)
+            pred_labels = torch.argmax(y_pred, dim=1)
+            ds_ds_acc = (pred_labels == Sy).float().mean().item()
+            print("Dˢ → Dˢ Accuracy:", ds_ds_acc)
 
-                #when val update, test update
-                y_pred, _, _ = student.forward(Tx_test)
-                count = 0
-                a = np.argmax(y_pred.detach().cpu().numpy(), axis = 1)
-                b = Ty_test.detach().cpu().numpy()
-                for it, it2 in zip(a, b):
-                    if it == it2:
-                        count = count + 1
-                # print(count/y_pred.shape[0])
-                if count/y_pred.shape[0]>max_test_accuracy:
-                    max_test_accuracy = count/y_pred.shape[0]
+    # Student model (cloned from teacher)
+    if sim: # initializes student model with teacher model
+        student = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88).to(DEVICE)
+        student.load_state_dict(teacher.state_dict())
+        optimizer2 = optim.Adam(student.parameters(), lr=0.1)
+    else: # initialize student model randomly
+        student = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88).to(DEVICE)
+        optimizer2 = optim.Adam(student.parameters(), lr=0.1)
 
-    # print("One Simulator Accuracy on Validation Dataset:",max_val_accuracy)
-    print("Accuracy on Testing Dataset:",max_test_accuracy)
+    max_val_accuracy = 0
+    max_test_accuracy = 0
 
-    return max_val_accuracy,max_test_accuracy
+    # Domain adaptation path (simulation only)
+    if sim:
+        for e in range(1, epoch + 1):
+            temp1 = 10
+            temp2 = 88 * shot
+            for i in range(temp1):
+                data = Sx[i*temp2:i*temp2+temp2]
+                target = Sy[i*temp2:i*temp2+temp2]
+                perm = torch.randperm(Tx.shape[0])[:temp2]
+                x_tar = Tx[perm]
+                y_target = Ty[perm]
+
+                # Knowledge distillation
+                y_src, x_src_mmd, raw_y1 = teacher(data)
+                y_tar, x_tar_mmd, raw_y2 = student(data)
+                tt = torch.argmax(raw_y1.detach(), dim=1)
+                loss_high_t = criterion(raw_y2, tt)
+                loss_high_t.backward()
+                optimizer2.step()
+
+                # MMD loss
+                y_src, x_src_mmd, _ = teacher(x_tar)
+                y_tar, x_tar_mmd, _ = student(x_tar)
+                loss_mmd = LAMBDA * mmd_loss(x_src_mmd, x_tar_mmd)
+                optimizer.zero_grad()
+                optimizer2.zero_grad()
+                loss_mmd.backward()
+                optimizer.step()
+                optimizer2.step()
+
+                # Final classification loss on physical data
+                optimizer2.zero_grad()
+                y_tar, _, _ = student(x_tar)
+                loss_c2 = criterion(y_tar, y_target)
+                loss_c2.backward()
+                optimizer2.step()
+
+            # Validation
+            with torch.no_grad():
+                y_pred, _, _ = student(Tx_val)
+                pred_labels = torch.argmax(y_pred, dim=1)
+                val_acc = (pred_labels == Ty_val).float().mean().item()
+                if val_acc > max_val_accuracy:
+                    max_val_accuracy = val_acc
+                    y_pred, _, _ = student(Tx_test)
+                    pred_labels = torch.argmax(y_pred, dim=1)
+                    test_acc = (pred_labels == Ty_test).float().mean().item()
+                    if test_acc > max_test_accuracy:
+                        max_test_accuracy = test_acc
+
+    else:
+        # Full-batch supervised training for Dᵖ → Dᵖ
+        for e in range(1, epoch + 1):
+            student.train()
+            y_pred, _, _ = student(Tx)
+            loss = criterion(y_pred, Ty)
+            optimizer2.zero_grad()
+            loss.backward()
+            optimizer2.step()
+
+            with torch.no_grad():
+                y_pred, _, _ = student(Tx_val)
+                pred_labels = torch.argmax(y_pred, dim=1)
+                val_acc = (pred_labels == Ty_val).float().mean().item()
+                if val_acc > max_val_accuracy:
+                    max_val_accuracy = val_acc
+                    y_pred, _, _ = student(Tx_test)
+                    pred_labels = torch.argmax(y_pred, dim=1)
+                    test_acc = (pred_labels == Ty_test).float().mean().item()
+                    if test_acc > max_test_accuracy:
+                        max_test_accuracy = test_acc
+
+    if sim:
+        print("Dˢ → Dᵖ Accuracy:", max_test_accuracy)
+        return ds_ds_acc, max_test_accuracy
+    else:
+        print("Dᵖ → Dᵖ Accuracy:", max_test_accuracy)
+        return max_val_accuracy, max_test_accuracy
 
 
-print("----------------Experiment with Simulation Data-------------------------")
-sim_val_acc,sim_test_acc = exp(shot=0,shuffle=True,epoch=80,sim=True)
 
-print("----------------Experiment with Physical Data-------------------------")
-phy_val_acc,phy_test_acc = exp(shot=5,shuffle=True,epoch=80,sim=False)
+# Run experiments
+print("\n----------------Experiment with Simulation Data-------------------------")
+sim_val_acc, sim_test_acc = exp(shot=0, shuffle=True, epoch=80, sim=True)
 
+print("\n----------------Experiment with Physical Data-------------------------")
+phy_val_acc, phy_test_acc = exp(shot=5, shuffle=True, epoch=80, sim=False)
 
+# Plot results
+labels = ['Dˢ → Dˢ', 'Dˢ → Dᵖ', 'Dᵖ → Dᵖ']
+values = [sim_val_acc, sim_test_acc, phy_test_acc]
+positions = [0.2, 0.7, 1.2]
 
-# Example data
-sim_val_acc = ['Training : Simulation Data\nTesting : Physical Data', 'Training : Physical Data\nTesting : Physical Data']
-phy_val_acc = [sim_test_acc, phy_test_acc]
-
-# Define the positions of the bars
-positions = [0.2, 0.7]  # Adjust these values to control the location of the bars
-
-# Create the plot
 plt.figure(figsize=(10, 6))
-bars = plt.bar(positions, phy_val_acc, color='skyblue', edgecolor='black', width=0.2)  # Adjusted the width to 0.2
-
-# Set the x-tick labels and positions
-plt.xticks(positions, sim_val_acc)
-
-# Add title and labels
-plt.title('Simulation-to-reality gap', fontsize=16)
-plt.xlabel('Dataset', fontsize=14)
+bars = plt.bar(positions, values, color='skyblue', edgecolor='black', width=0.3)
+plt.xticks(positions, labels)
+plt.title('Simulation-to-Reality Gap', fontsize=16)
+plt.xlabel('Domain Adaptation Setting', fontsize=14)
 plt.ylabel('Accuracy', fontsize=14)
-plt.ylim(0,1)
-# Add values on top of the bars
+plt.ylim(0, 1)
+
 for bar in bars:
     yval = bar.get_height()
-    plt.text(bar.get_x() + bar.get_width()/2.0, yval, f'{yval:.2f}', ha='center', va='bottom', fontsize=14)
+    plt.text(bar.get_x() + bar.get_width()/2.0, yval, f'{yval*100:.2f}%', ha='center', va='bottom', fontsize=14)
 
-# Add grid
 plt.grid(axis='y', linestyle='--', linewidth=0.7)
-
-# Display the plot
 plt.show()

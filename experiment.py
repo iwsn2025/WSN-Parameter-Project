@@ -9,10 +9,9 @@ import torch.nn.functional as F
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 import mmd
-from variable2 import *
+from variable import *
 from MatSampler import MatSampler
 import random
-from sklearn.model_selection import train_test_split
 
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -28,32 +27,24 @@ class DaNN(nn.Module):
         super(DaNN, self).__init__()
         self.layer_input = nn.Linear(n_input, n_hidden1)
         self.relu = nn.ReLU()
-        self.layer_hidden = nn.Linear(n_hidden1, 256)
-        self.layer_hidden1 = nn.Linear(256, n_hidden2)
-
+        self.layer_hidden = nn.Linear(n_hidden1, n_hidden2)
         self.layer_hidden2 = nn.Linear(n_hidden2, n_class)
-
-    import torch.nn.functional as F
 
     def forward(self, x):
         x1 = self.layer_input(x)
         x2 = self.relu(x1)
         x3 = self.layer_hidden(x2)
         x4 = self.relu(x3)
-
-        x5 = self.layer_hidden1(x4)
-        x6 = self.relu(x5)
-
-        y1 = self.layer_hidden2(x6)
-        y = F.log_softmax(y1, dim=1)  # ✅ fixed
-        y2 = F.log_softmax(y1 / 10, dim=1)  # ✅ fixed
-        return y, x3, y2
+        y1 = self.layer_hidden2(x4)
+        y = F.log_softmax(y1)
+        y2 = F.log_softmax(y1/10)
+        return y, x3, y2    #softmax(output) and mmd and softmax(output/T)
 
 
 #Execute the experiment using a simulator in the student model training process, with a total of 500 epochs.
 #The sampling algorithm will be employed as the default method.
 #Without sampling 5 shots of physical data from the target domain will be used.
-def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1, beta=1):
+def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True):
 
     #initialize the random seed
     random.seed(1)
@@ -66,7 +57,7 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
 
     dataset = pd.read_csv("data/training/simulationData/%s.csv"%(simulator), sep=',')
 
-    X = np.array(dataset.drop(['A', 'C', 'P', 'LA'], axis=1))
+    X = np.array(dataset.drop(['A', 'C', 'P', 'LA'], 1))
     X = np.float32(X)
     scaler = StandardScaler().fit(X)
     X = scaler.transform(X)
@@ -91,7 +82,7 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
         print("read from data/training/physicalData/physicalData.csv ")
         dataset2 = pd.read_csv("data/training/physicalData/physicalData.csv", sep=',')[0:n_configs*shots]
 
-    X2 = np.array(dataset2.drop(['A', 'C', 'P', 'LA'], axis=1))
+    X2 = np.array(dataset2.drop(['A', 'C', 'P', 'LA'], 1))
     X2 = np.float32(X2)
     X2 = scaler.transform(X2)
     y2 = np.array(dataset2['LA'])
@@ -107,7 +98,7 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
     #load data for testing (target domain data)
 
     dataset3 = pd.read_csv("data/testing/testData.csv", sep=',')
-    X3 = np.array(dataset3.drop(['A', 'C', 'P', 'LA'], axis=1))
+    X3 = np.array(dataset3.drop(['A', 'C', 'P', 'LA'], 1))
     X3 = np.float32(X3)
     X3 = scaler.transform(X3)
     y3 = np.array(dataset3['LA'])
@@ -122,26 +113,7 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
     Tx_test = Tx_test.to(DEVICE)
     print(Tx_test.shape, Ty_test.shape)
 
-    Random_State =0
-
-
-    dataset3 = pd.read_csv("realworlddata.csv", sep=',')
-    X3 = np.array(dataset3.drop(['A', 'C', 'P', 'LA'], axis=1))
-    X3 = np.float32(X3)
-    X3 = scaler.transform(X3)
-    y3 = np.array(dataset3['LA'])
-    y3 = np.float32(y3)
-    TA = torch.from_numpy(X3)
-    X_train1, X_test, y_train1, y_test = train_test_split(X3, y3, test_size = 0.4, random_state=Random_State)
-    Tx_test = torch.from_numpy(X_test)
-    Ty_test = torch.from_numpy(y_test).type(torch.LongTensor)
-
-    Ty_test = Ty_test.to(DEVICE)
-    Tx_test = Tx_test.to(DEVICE)
-
-
     #Teacher model
-    # teacher = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88)
     teacher = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88)
     teacher = teacher.to(DEVICE)
     optimizer = optim.Adam(teacher.parameters(), lr=LEARNING_RATE*10)
@@ -150,13 +122,8 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
 
     #Teacher Model training process
     print("Teacher Model training process")
-
-    if simulator in ["cooja","omnet"]:
-        t_epoch = 150
-    else:
-        t_epoch = 100
     #100 epoches
-    for e in range(1, t_epoch + 1):
+    for e in range(1, 100 + 1):
         teacher.train()
         y_pred, _, _ = teacher.forward(Sx)
         loss_c = criterion(y_pred, Sy)
@@ -181,26 +148,16 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
 
     print("-----------")
 
-    if simulator in ["omnet"]:
-        lr = 1
-    else:
-        lr = 3
-
-
     #Student model
-    # student = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88)
     student = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88)
     student = student.to(DEVICE)
     student.load_state_dict(teacher.state_dict())
     optimizer2 = optim.SGD(
         student.parameters(),
-        lr=LEARNING_RATE*lr,
-        momentum=MOMEMTUN,
+        lr=LEARNING_RATE*3,
+        momentum=MOMENTUM,
         weight_decay=L2_WEIGHT
     )
-
-    if simulator in ["omnet"]:
-        student_epoch=2000
 
     #Student Model training process
     print("Student Model training process")
@@ -220,8 +177,8 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
             x_tar = Tx[0:temp2]
             y_target = Ty[0:temp2]
 
-            y_src, x_src_mmd, raw_y1 = teacher(Sx)
-            y_tar, x_tar_mmd, raw_y2 = student(Sx)
+            y_src, x_src_mmd, raw_y1 = teacher(data)
+            y_tar, x_tar_mmd, raw_y2 = student(data)
 
             if DEVICE == "cpu":
                 tt = np.argmax(raw_y1.detach().numpy(), axis = 1)
@@ -236,56 +193,14 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
 
             optimizer2.step()
 
-
-
-
-            y_tar, x_src_mmd, raw_y2 = student(Sx)
-
-            x_src_mmd_mean = torch.mean(x_src_mmd.view(88,75,-1),dim=1).squeeze()
-
-            y_src, x_tar_mmd, y_src_soft = student(x_tar)
-
-            n=2
-            temperature = 0.07
-
-            x_tar_mmd_mean = torch.mean(x_tar_mmd.view(5,88,-1),dim=0).squeeze()
-
-            # print("shape",x_src_mmd_mean.shape,x_tar_mmd_mean.shape)
-
-            x_tar_mmd_mean = torch.hstack([x_src_mmd_mean,x_tar_mmd_mean])
-            # print("shape",x_tar_mmd_mean.shape)
-
-
-            sim = F.cosine_similarity(x_tar_mmd_mean[:88*n, :].unsqueeze(1), x_tar_mmd_mean[:88*n, :].unsqueeze(0), dim=-1) / temperature
-
-
-
-            #intra
-            sim[0:88,0:88] = sim[0:88,0:88]*alpha
-            sim[88:88*2,88:88*2] = sim[88:88*2,88:88*2]*alpha
-
-
-            # print("before",sim[0:88,88:88*2])
-             #inter
-            sim[0:88,88:88*2] = sim[0:88,88:88*2]*beta*0.1
-            sim[88:88*2,0:88] = sim[88:88*2,0:88]*beta*0.1
-            # print("after",sim[0:88,88:88*2])
-
-
-            loss_sim = torch.cat([torch.tril(sim, diagonal=-1), torch.triu(sim, diagonal=1)], dim=-1)
-
-
-
-            loss_sim = -0.001*F.log_softmax(loss_sim, dim=-1).mean()
-
-
+            y_src, x_src_mmd, y_src_soft = student(x_tar)
+            y_tar, x_tar_mmd, y_tar_soft = student(x_tar)
+            loss_mmd = LAMBDA * mmd_loss(x_src_mmd, x_tar_mmd)
             optimizer.zero_grad()
             optimizer2.zero_grad()
-            loss_sim.backward()
+            loss_mmd.backward()
             optimizer.step()
             optimizer2.step()
-
-
 
 
 
@@ -351,25 +266,17 @@ def testWithSampleNumbers(extraSample=0,sampling_enabled=True,simulator = "tossi
 
 
 
-def test(sampling_enabled=False):
+def test(sampling_enabled=True):
 #experiment with or without sampling algorithm using four simulators.
 
     print("sampling_enabled",sampling_enabled)
     simulators = ["ns3","cooja","tossim","omnet"]
 
-    # simulators = ["ns3"]
 
+    experiment_result=dict()
 
-    results = []
-    for beta in [0.6]:
-
-    # for beta in [0.2,0.4,0.6,0.8,1]:
-    # for beta in [0.2,0.3,0.4,0.5,0.6]:
-
-        experiment_result=dict()
-        #for each simulator
-        for i in simulators:
-
+    #for each simulator
+    for i in simulators:
             sampleCount = 88*5
 
             # Trigger sampling algorithm based on Mahalanobis distance if sampling is enabled
@@ -390,22 +297,17 @@ def test(sampling_enabled=False):
             # Utilize physical or physical sampling data to train the model
             # Validate the model's performance using a separate testing dataset
             # Return the model's output for further analysis
-            experiment_acc = experiment(simulator="omnet",student_epoch=1500,shots=5,sampling_enabled=sampling_enabled, alpha = 0.3,  beta = beta)
-            # experiment_acc = experiment(simulator=i,student_epoch=1500,shots=5,sampling_enabled=sampling_enabled,alpha =0, beta=0)
+            experiment_acc = experiment(simulator="omnet",student_epoch=500,shots=5,sampling_enabled=sampling_enabled)
 
             #save the experiment results
             experiment_result[i]={
-                # "sampleCount":sampleCount,
+                "sampleCount":sampleCount,
                 "experiment_acc":experiment_acc
             }
 
-        print({"alpha":beta,"res":experiment_result})
-        results.append({"alpha":beta,"res":experiment_result})
-
-
     #print out the experiment results
     print("----------------------------------------------------------------------------")
-    print(results)
+    print(experiment_result)
 
     return experiment_result
 
@@ -455,10 +357,3 @@ def experimentWithDiffSampleNumber():
     print(mat_res)
 
     return mat_res
-
-
-test()
-
-
-
-# [{'beta': 0.2, 'res': {'ns3': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.4, 'res': {'ns3': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.6, 'res': {'ns3': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.8, 'res': {'ns3': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 1, 'res': {'ns3': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}]

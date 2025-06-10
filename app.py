@@ -312,7 +312,7 @@ with tab2:
     ]
 
     # Hypothetical values based on domain gap research (higher control to higher realism)
-    acc_values = [0.9500, 0.2570, 0.8892]
+    acc_values = [0.8892, 0.2570, 0.7983]
 
     # Create DataFrame
     gap_df = pd.DataFrame({
@@ -346,7 +346,7 @@ with tab2:
                     'Prediction Accuracy': 'Prediction Accuracy'
                 },
                 color='Training and testing on different data sets',
-                color_discrete_sequence=['#87CEEB', '#FFA500', '#A9A9A9']  # Sky Blue, Orange, Dark Gray
+                color_discrete_sequence=['#A9A9A9', '#87CEEB', '#FFD700']  # Dark Gray, Sky Blue, Gold
             )
             fig.update_layout(
                 bargap=0.4,  # increase gap to make bars thinner
@@ -448,9 +448,8 @@ with tab3:
 
         # Generate synthetic or load real data
         contrastive_data = pd.DataFrame({
-            "Shots": [0, 1, 2, 4, 8, 16, 32, 64, 128],
-            "CL-Method1": [0.55, 0.61, 0.66, 0.71, 0.75, 0.78, 0.80, 0.83, 0.85],
-            "CL-Method2": [0.53, 0.59, 0.64, 0.69, 0.74, 0.77, 0.79, 0.82, 0.84]
+            "Shots": [1, 2, 3, 4, 5],
+            "CL-OMNet": [0.477, 0.473, 0.514, 0.535, 0.680]
         })
 
         if contrastive_domain_visuals:
@@ -547,7 +546,7 @@ with tab3:
         # Step 2: Reshape the data into a long format for easy plotting
         combined_melted = merged_data.melt(
             id_vars=['Shots'],  # Keep 'Shots' as the id
-            value_vars=['Single Source Accuracy', 'Multi Source Accuracy', 'CL-Method1', 'CL-Method2'],
+            value_vars=['Single Source Accuracy', 'Multi Source Accuracy', 'CL-OMNet'],
             # Columns to melt
             var_name='Source Type',  # New column for the source types
             value_name='Prediction Accuracy'  # The actual values for the plot
@@ -563,8 +562,7 @@ with tab3:
                 combined_melted['Source Type'] = combined_melted['Source Type'].map({
                     'Single Source Accuracy': 'Single Source',
                     'Multi Source Accuracy': 'Multi Source',
-                    'CL-Method1': 'Contrastive Domain Method 1',
-                    'CL-Method2': 'Contrastive Domain Method 2'
+                    'CL-OMNet': 'CL-OMNet'
                 })
 
                 # Grouped Bar Chart
@@ -609,14 +607,13 @@ with tab3:
 
                 # Step 2: Create separate columns for each source type
                 combined_data_table = merged_data[
-                    ['Shots', 'Single Source Accuracy', 'Multi Source Accuracy', 'CL-Method1', 'CL-Method2']]
+                    ['Shots', 'Single Source Accuracy', 'Multi Source Accuracy', 'CL-OMNet']]
 
                 # Rename the columns for clarity
                 combined_data_table = combined_data_table.rename(columns={
                     'Single Source Accuracy': 'Single Source Accuracy',
                     'Multi Source Accuracy': 'Multi Source Accuracy',
-                    'CL-Method1': 'Contrastive Domain Method 1 Accuracy',
-                    'CL-Method2': 'Contrastive Domain Method 2 Accuracy'
+                    'Contrastive Learning Accuracy': 'CL-OMNet'
                 })
 
                 # Display the table with separate columns

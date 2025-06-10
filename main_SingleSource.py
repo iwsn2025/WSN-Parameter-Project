@@ -236,7 +236,7 @@ def exp(shot=5,shuffle=False,epoch=500):
 val_accs=[]
 test_accs=[]
 
-for i in range(1,7):
+for i in range(1,6):
     print("------------------Experiment with %d shot(s) of data on one simulator (TOSSIM)--------------------------"%(i))
     print("Training data: simulation data and %d shot(s) of physical data"%(i))
     print("Testing data: physical data")
@@ -248,9 +248,9 @@ for i in range(1,7):
 # Create the plot
 plt.figure(figsize=(10, 6))
 # plt.plot(val_accs, label='Validation Accuracy', marker='o', linestyle='-')
-plt.plot(range(1,7),test_accs, label='Accuracy', marker='s', linestyle='--')
+plt.plot(range(1,6),test_accs, label='Accuracy', marker='s', linestyle='--')
 
-plt.xticks(range(1,7))
+plt.xticks(range(1,6))
 
 # Add title and labels
 plt.title('One simulator: TOSSIM', fontsize=16)

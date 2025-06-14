@@ -15,6 +15,7 @@ from variable import *
 import random
 from matplotlib import pyplot as plt
 import warnings
+import csv
 warnings.filterwarnings("ignore")
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -43,7 +44,7 @@ class DaNN(nn.Module):
         return y, x3, y2    
 
 
-def exp(shot=5,shuffle=False,epoch=500):
+def exp(shot=5,shuffle=False,epoch=500): #TODO: change epoch
     torch.manual_seed(1)
     Random_State =0
     Step = 500
@@ -135,7 +136,7 @@ def exp(shot=5,shuffle=False,epoch=500):
     #Teacher model
     teacher = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88)
     teacher = teacher.to(DEVICE)
-    optimizer = optim.Adam(teacher.parameters(), lr=0.1)
+    optimizer = optim.Adam(teacher.parameters(), lr=0.1) #TODO: change learning rate (make it smaller)
     criterion = nn.CrossEntropyLoss()
 
     for e in range(1, 0 + 1):
@@ -269,13 +270,10 @@ def exp(shot=5,shuffle=False,epoch=500):
 
     return max_val_accuracy,max_test_accuracy
 
-
-
-
 val_accs=[]
 test_accs=[]
 
-for i in range(1,7):
+for i in range(1,6):
     print("------------------Experiment with %d shot(s) of data on two simulators (TOSSIM,NS-3)--------------------------"%(i))
     print("Training data: simulation data and %d shot(s) of physical data"%(i))
     print("Testing data: physical data")
@@ -284,12 +282,22 @@ for i in range(1,7):
     val_accs.append(val_acc)
     test_accs.append(test_acc)
 
+# Save test accuracies to CSV
+csv_file = "csvs/multi_source_accuracy.csv"  # this will be overwritten every run
+
+with open(csv_file, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Shots", "Multi Source Accuracy"])
+    for i, acc in enumerate(test_accs, start=1):
+        writer.writerow([i, acc])
+
+print(f"Accuracy data saved to {csv_file}")
 
 # Create the plot
 plt.figure(figsize=(10, 6))
 # plt.plot(val_accs, label='Validation Accuracy', marker='o', linestyle='-')
-plt.plot(range(1,7),test_accs,  marker='s', linestyle='--')
-plt.xticks(range(1,7))
+plt.plot(range(1,6),test_accs,  marker='s', linestyle='--')
+plt.xticks(range(1,6))
 plt.ylim(0,1)
 
 # Add title and labels

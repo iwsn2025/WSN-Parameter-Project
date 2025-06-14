@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
+import csv
 
 import numpy as np
 import torch
@@ -279,7 +280,17 @@ def exp(shot=5,shuffle=False,epoch=500,sim=True):
             test_accs.append(test_acc)
             print("----Accuracy: ",test_acc)
 
+    # Save test accuracies to CSV
+    csv_file = "csvs/accuracy_over_time.csv"  # this will be overwritten every run
+    days = np.power(2, range(2, 2 + len(test_accs)))
 
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Days Passed", "Accuracy"])
+        for day, acc in zip(days, test_accs):
+            writer.writerow([day, acc])
+
+    print(f"Accuracy data saved to {csv_file}")
 
     return test_accs
 

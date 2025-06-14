@@ -204,6 +204,13 @@ sim_val_acc, sim_test_acc = exp(shot=0, shuffle=True, epoch=80, sim=True)
 print("\n----------------Experiment with Physical Data-------------------------")
 phy_val_acc, phy_test_acc = exp(shot=5, shuffle=True, epoch=80, sim=False)
 
+# Save results to CSV
+results_df = pd.DataFrame({
+    "Domain Setting": ['Dˢ → Dˢ', 'Dˢ → Dᵖ', 'Dᵖ → Dᵖ'],
+    "Accuracy": [sim_val_acc, sim_test_acc, phy_test_acc]
+})
+results_df.to_csv("csvs/gap_experiment_results.csv", index=False)
+
 # Plot results
 labels = ['Dˢ → Dˢ', 'Dˢ → Dᵖ', 'Dᵖ → Dᵖ']
 values = [sim_val_acc, sim_test_acc, phy_test_acc]

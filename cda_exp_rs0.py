@@ -458,7 +458,24 @@ def experimentWithDiffSampleNumber():
 
 
 test()
+# TODO: Make contrastive domain go into CSV with 5 shots, using values from research paper
+# Run contrastive domain experiment for omnet and 5 shots only
+sim = "omnet"
+shots = 5
 
+print(f"Running SAC experiment for simulator={sim}, shots={shots}")
+acc = experiment(simulator=sim, student_epoch=1500, shots=shots, sampling_enabled=True, alpha=0.3, beta=0.6)
+
+# Save the result to CSV
+import csv
+
+csv_file = "csvs/contrastive_domain_accuracy.csv"
+with open(csv_file, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Shots", "CL-OMNet"])
+    writer.writerow([shots, acc])
+
+print(f"Contrastive domain result saved to {csv_file}")
 
 
 # [{'beta': 0.2, 'res': {'ns3': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.4, 'res': {'ns3': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.6, 'res': {'ns3': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.8, 'res': {'ns3': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 1, 'res': {'ns3': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}]

@@ -23,14 +23,9 @@ def generate_scatter_data():
 # Function to load experiment data for main-SingleSource and main-MultiSource
 @st.cache_data
 def load_experiment_data():
-    # Hardcoded values based on published paper results
-    data = pd.DataFrame({
-        'Shots': [1, 2, 3, 4, 5],
-        'Single Source Accuracy': [0.50610125, 0.55982624, 0.62315617, 0.65904125, 0.71851902],  # Replace with actual paper value
-        'Multi Source Accuracy': [0.5818, 0.6390, 0.7568, 0.7854, 0.8039]    # Replace with actual paper value
-    })
-
-    return data
+    csv_path = os.path.join(os.path.dirname(__file__), "csvs/gap_experiment_results.csv")
+    df = pd.read_csv(csv_path)
+    return df
 
 # Function to read the contrastive domain log data (with caching)
 @st.cache_data
@@ -39,7 +34,7 @@ def read_contrastive_log(path="contrastive_log.txt"):
     accuracies = []
     with open(path, 'r') as f:
         for line in f:
-            if "epoch" in line.lower() and "accuracy" in line.lower():
+            if "epoch" in line.lower() and "accuraccy" in line.lower():
                 parts = line.strip().split(":")
                 epoch = parts[0].split()[-1]
                 acc = float(parts[-1])
@@ -48,7 +43,7 @@ def read_contrastive_log(path="contrastive_log.txt"):
     return pd.DataFrame({"Epoch": epochs, "Prediction Accuracy": accuracies})
 
 
-# Function to display the contrastive domain chart
+# Function to display the contrastive domain chartAdd commentMore actions
 def contrastive_domain_chart():
     # Fetching contrastive domain training log
     df_contrastive = read_contrastive_log()
@@ -66,111 +61,90 @@ def contrastive_domain_chart():
     )
     st.plotly_chart(fig, use_container_width=True)
 
+# Function to load experiment data for main-performance-degradation
 @st.cache_data
-# Function to display the domain without runtime adaptation chart (main-performance-degradation)
 def load_accuracy_over_time_tab(chart_type):
-    # Hardcoded data: accuracy without runtime adaptation (normalized to [0,1])
-    df_accuracy = pd.DataFrame({
-        "Days Passed": [4, 8, 16, 32, 64, 128],
-        "Accuracy": [0.788, 0.743, 0.705, 0.672, 0.635, 0.598]
-    })
+    st.header("Accuracy Over Time with Domain Adaptation")
+    csv_path = os.path.join(os.path.dirname(__file__), "csvs/accuracy_over_time.csv")
 
-    if chart_type == "Table":
-        st.dataframe(df_accuracy)
+    try:
+        df_accuracy = pd.read_csv(csv_path)
 
-    elif chart_type == "Line Chart":
-        fig = px.line(
-            df_accuracy, x="Days Passed", y="Accuracy", markers=True,
-            title="Without Runtime Adaptation",
-            labels={
-                "Days Passed": "Number of Days Passed after Generating the Network Configuration Model",
-                "Accuracy": "Prediction Accuracy"
-            },
-            template="plotly_white",
-            range_y=[0, 1]
-        )
-        fig.update_xaxes(tickvals=df_accuracy["Days Passed"])
-        st.plotly_chart(fig)
+        # Ensure Days Passed is treated as categorical
+        df_accuracy["Days Passed"] = df_accuracy["Days Passed"].astype(str)
 
-    elif chart_type == "Bar Chart":
-        fig = px.bar(
-            df_accuracy, x="Days Passed", y="Accuracy",
-            title="Without Runtime Adaptation",
-            labels={
-                "Days Passed": "Number of Days Passed after Generating the Network Configuration Model",
-                "Accuracy": "Prediction Accuracy"
-            },
-            template="plotly_white",
-            range_y=[0, 1]
-        )
-        fig.update_xaxes(
-            type="category",
-            tickvals=df_accuracy["Days Passed"],
-            title_font=dict(size=14),
-            tickfont=dict(size=12)
-        )
-        fig.update_yaxes(title_font=dict(size=14), tickfont=dict(size=12))
-        fig.update_layout(
-            title_font_size=16,
-            title_x=0.45,
-            bargap=0.2,
-            height=500,
-            width=800
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        if chart_type == "Table":
+            st.subheader("Accuracy Table")
+            st.dataframe(df_accuracy)
 
+        elif chart_type == "Line Chart":
+            st.subheader("Line Chart of Accuracy Over Time")
+            fig = px.line(df_accuracy, x="Days Passed", y="Accuracy", markers=True,
+                          title="Accuracy changes over time with domain adaptation",
+                          labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"})
+            fig.update_layout(
+                xaxis=dict(type='category'),
+                yaxis=dict(range=[0, 1]),
+                xaxis_title="Days Passed",
+                yaxis_title="Accuracy"
+            )
+            st.plotly_chart(fig)
 
+        elif chart_type == "Bar Chart":
+            st.subheader("Bar Chart of Accuracy Over Time")
+            fig = px.bar(df_accuracy, x="Days Passed", y="Accuracy",
+                         title="Accuracy changes over time with domain adaptation",
+                         labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"})
+            fig.update_layout(
+                xaxis=dict(type='category'),
+                yaxis=dict(range=[0, 1]),
+                xaxis_title="Days Passed",
+                yaxis_title="Accuracy"
+            )
+            st.plotly_chart(fig)
+
+    except FileNotFoundError:
+        st.error("Accuracy data not found. Please run the experiment script to generate accuracy_over_time.csv.")
+
+# Function to load the meta accuracy CSV file
 @st.cache_data
 def load_meta_accuracy_csv(chart_type):
-    # Hardcoded accuracy data (normalized to 0–1 range)
-    df = pd.DataFrame({
-        "Days Passed": [4, 8, 16, 32, 64, 128],
-        "Prediction Accuracy": [0.6839, 0.6732, 0.6505, 0.5534, 0.5123, 0.5008]  # MERA (Ours)
-    })
+    try:
+        df = pd.read_csv('csvs/meta_accuracy_over_time.csv')
+        df["Days Passed"] = df["Days Passed"].astype(str)
 
-    if chart_type == "Table":
-        st.dataframe(df)
+        if chart_type == "Table":
+            st.subheader("Meta Learning Accuracy Table")
+            st.dataframe(df)
 
-    elif chart_type == "Line Chart":
-        fig = px.line(
-            df, x="Days Passed", y="Prediction Accuracy", markers=True,
-            title="With our Meta-Learning based runtime adaption",
-            labels={
-                "Days Passed": "Number of Days Passed after Generating the Network Configuration Model",
-                "Prediction Accuracy": "Prediction Accuracy"
-            },
-            template="plotly_white",
-            range_y=[0, 1]
-        )
-        fig.update_xaxes(tickvals=df["Days Passed"])
-        st.plotly_chart(fig)
+        elif chart_type == "Line Chart":
+            st.subheader("Line Chart of Meta Learning Accuracy Over Time")
+            fig = px.line(df, x="Days Passed", y="Accuracy", markers=True,
+                          title="Meta Learning Accuracy Over Time",
+                          labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"})
+            fig.update_layout(
+                xaxis=dict(type='category'),
+                yaxis=dict(range=[0, 1]),
+                xaxis_title="Days Passed",
+                yaxis_title="Accuracy"
+            )
+            st.plotly_chart(fig)
 
-    elif chart_type == "Bar Chart":
-        fig = px.bar(
-            df, x="Days Passed", y="Prediction Accuracy",
-            title="With our Meta-Learning based runtime adaption",
-            labels={
-                "Days Passed": "Number of Days Passed after Generating the Network Configuration Model",
-                "Prediction Accuracy": "Prediction Accuracy"
-            },
-            template="plotly_white",
-            range_y=[0, 1]
-        )
-        fig.update_xaxes(
-            type="category",
-            tickvals=df["Days Passed"],
-            title_font=dict(size=14),
-            tickfont=dict(size=12)
-        )
-        fig.update_yaxes(title_font=dict(size=14), tickfont=dict(size=12))
-        fig.update_layout(
-            title_font_size=16,
-            title_x=0.4,
-            bargap=0.2,
-            height=500,
-            width=800
-        )
-        st.plotly_chart(fig, use_container_width=True)
+        elif chart_type == "Bar Chart":
+            st.subheader("Bar Chart of Meta Learning Accuracy Over Time")
+            fig = px.bar(df, x="Days Passed", y="Accuracy",
+                         title="Meta Learning Accuracy Over Time",
+                         labels={"Days Passed": "Days Passed", "Accuracy": "Accuracy"})
+            fig.update_layout(
+                xaxis=dict(type='category'),
+                yaxis=dict(range=[0, 1]),
+                xaxis_title="Days Passed",
+                yaxis_title="Accuracy"
+            )
+            st.plotly_chart(fig)
+
+    except FileNotFoundError:
+        st.error("CSV file not found. Please ensure the file 'meta_accuracy_over_time.csv' is in the correct location.")
 
 # Tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network Configuration", "Closing the Gap", "Runtime Adaptation"])
@@ -258,21 +232,24 @@ with tab1:
 with tab2:
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
-    # Updated dataset: simulation-to-simulation → simulation-to-real → physical-to-physical
-    sim_val_acc = [
-        'Train: Simulation, Test: Simulation (Dˢ → Dˢ)',
-        'Train: Simulation, Test: Physical (Dˢ → Dᵖ)',
-        'Train: Physical, Test: Physical (Dᵖ → Dᵖ)'
-    ]
+    # Load experiment data from CSV
+    gap_df = load_experiment_data()
 
-    # Hypothetical values based on domain gap research (higher control to higher realism)
-    acc_values = [0.8892, 0.2570, 0.7983]
+    # Handle mapping if the CSV uses short domain codes
+    if 'Domain Setting' in gap_df.columns:
+        label_map = {
+            'Dˢ → Dˢ': 'Train: Simulation, Test: Simulation (Dˢ → Dˢ)',
+            'Dˢ → Dᵖ': 'Train: Simulation, Test: Physical (Dˢ → Dᵖ)',
+            'Dᵖ → Dᵖ': 'Train: Physical, Test: Physical (Dᵖ → Dᵖ)'
+        }
+        gap_df['Training and testing on different data sets'] = gap_df['Domain Setting'].map(label_map)
+    elif 'Training and testing on different data sets' not in gap_df.columns:
+        st.error("The loaded CSV must contain either 'Domain Setting' or 'Training and testing on different data sets'.")
+        st.stop()
 
-    # Create DataFrame
-    gap_df = pd.DataFrame({
-        'Training and testing on different data sets': sim_val_acc,
-        'Prediction Accuracy': acc_values
-    })
+    # Rename for chart consistency
+    if 'Accuracy' in gap_df.columns:
+        gap_df = gap_df.rename(columns={'Accuracy': 'Prediction Accuracy'})
 
     st.write('<p>Junyang Shi, Mo Sha, and Xi Peng, '
              '<a href="https://users.cs.fiu.edu/~msha/publications/nsdi21.pdf" target="_blank">'
@@ -300,11 +277,11 @@ with tab2:
                     'Prediction Accuracy': 'Prediction Accuracy'
                 },
                 color='Training and testing on different data sets',
-                color_discrete_sequence=['#A9A9A9', '#87CEEB', '#FFD700']  # Dark Gray, Sky Blue, Gold
+                color_discrete_sequence=['#A9A9A9', '#87CEEB', '#FFD700']
             )
             fig.update_layout(
-                bargap=0.4,  # increase gap to make bars thinner
-                xaxis={'categoryorder': 'array', 'categoryarray': sim_val_acc}
+                bargap=0.4,
+                xaxis={'categoryorder': 'array', 'categoryarray': gap_df['Training and testing on different data sets'].tolist()}
             )
             st.plotly_chart(fig)
 
@@ -333,7 +310,7 @@ with tab2:
 
         if "Data Table" in single_source_selected_visuals:
             st.subheader("Gap Analysis Table")
-            st.dataframe(gap_df)
+            st.dataframe(gap_df[['Training and testing on different data sets', 'Prediction Accuracy']])
     else:
         st.info("No data selected to display.")
 
@@ -363,9 +340,12 @@ with tab3:
             key="single_source"
         )
 
+        # Load single source CSV
+        single_source_data = pd.read_csv("csvs/single_source_accuracy.csv")
+
         if single_source_visuals:
             if "Bar Chart" in single_source_visuals:
-                fig = px.bar(data, x='Shots', y='Single Source Accuracy',
+                fig = px.bar(single_source_data, x='Shots', y='Single Source Accuracy',
                              title="NSDI Prediction Accuracy (Bar)",
                              labels={
                                  'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
@@ -375,7 +355,7 @@ with tab3:
                 st.plotly_chart(fig)
 
             if "Line Chart" in single_source_visuals:
-                fig = px.line(data, x='Shots', y='Single Source Accuracy', markers=True,
+                fig = px.line(single_source_data, x='Shots', y='Single Source Accuracy', markers=True,
                               title="NSDI Prediction Accuracy (Line)",
                               labels={
                                   'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
@@ -385,7 +365,7 @@ with tab3:
 
             if "Table" in single_source_visuals:
                 st.subheader("NSDI Source Table")
-                st.dataframe(data[['Shots', 'Single Source Accuracy']])
+                st.dataframe(single_source_data[['Shots', 'Single Source Accuracy']])
 
         st.write("(2) Using contrastive domain adaptation to close the gap.")
         st.write('<p> Aitian Ma and Mo Sha, '
@@ -400,11 +380,8 @@ with tab3:
             key="contrastive_domain"
         )
 
-        # Generate synthetic or load real data
-        contrastive_data = pd.DataFrame({
-            "Shots": [1, 2, 3, 4, 5],
-            "CL-OMNet": [0.477, 0.473, 0.514, 0.535, 0.680]
-        })
+        # Load CSV data for SAC
+        contrastive_data = pd.read_csv("csvs/contrastive_domain_accuracy.csv")
 
         if contrastive_domain_visuals:
             if "Bar Chart" in contrastive_domain_visuals:
@@ -421,32 +398,24 @@ with tab3:
                     },
                     range_y=[0, 1]
                 )
-
-                # Adjust x-axis to ensure uniform intervals
                 fig.update_layout(
-                    xaxis=dict(type='category'),  # Set x-axis as categorical for uniform spacing
+                    xaxis=dict(type='category'),
                     xaxis_title='Amount of Physical Data Used for Training (No. of Shots)',
                     yaxis_title='Prediction Accuracy'
                 )
-
                 st.plotly_chart(fig)
 
             if "Line Chart" in contrastive_domain_visuals:
-                contrastive_melted = contrastive_data.melt(
-                    id_vars='Shots', var_name='Method', value_name='Prediction Accuracy'
-                )
-                fig = px.line(
-                    contrastive_melted, x='Shots', y='Prediction Accuracy', color='Method', markers=True,
-                    title="[SAC] Contrastive Domain Adaptation Accuracy (Line)",
-                    labels={
-                        'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
-                        'Prediction Accuracy': 'Prediction Accuracy'
-                    }
-                )
+                fig = px.line(contrastive_data, x='Shots', y='CL-OMNet', markers=True,
+                              title="[SAC] Contrastive Domain Adaptation Accuracy (Line)",
+                              labels={
+                                  'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
+                                  'CL-OMNet': 'Prediction Accuracy'
+                              })
                 st.plotly_chart(fig)
 
             if "Table" in contrastive_domain_visuals:
-                st.subheader("Contrastive Domain Table")
+                st.subheader("Contrastive Domain Results (SAC - OMNeT)")
                 st.dataframe(contrastive_data)
 
         st.write("(3) Employing multi-source domain adaptation to close the gap.")
@@ -461,9 +430,12 @@ with tab3:
             key="multi_source"
         )
 
+        # Load data
+        multi_source_data = pd.read_csv("csvs/multi_source_accuracy.csv")
+
         if multi_source_visuals:
             if "Bar Chart" in multi_source_visuals:
-                fig = px.bar(data, x='Shots', y='Multi Source Accuracy',
+                fig = px.bar(multi_source_data, x='Shots', y='Multi Source Accuracy',
                              title="EWSN Prediction Accuracy (Bar)",
                              labels={
                                  'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
@@ -473,7 +445,7 @@ with tab3:
                 st.plotly_chart(fig)
 
             if "Line Chart" in multi_source_visuals:
-                fig = px.line(data, x='Shots', y='Multi Source Accuracy', markers=True,
+                fig = px.line(multi_source_data, x='Shots', y='Multi Source Accuracy', markers=True,
                               title="EWSN Prediction Accuracy (Line)",
                               labels={
                                   'Shots': 'Amount of Physical Data Used for Training (No. of Shots)',
@@ -483,7 +455,7 @@ with tab3:
 
             if "Table" in multi_source_visuals:
                 st.subheader("Multi Source Table")
-                st.dataframe(data[['Shots', 'Multi Source Accuracy']])
+                st.dataframe(multi_source_data[['Shots', 'Multi Source Accuracy']])
 
         # 🟪 Combined Source Visualizations
         combined_source_selected_visuals = st.multiselect(
@@ -493,9 +465,13 @@ with tab3:
             ]
         )
 
-        # Merge 'data' with 'contrastive_data'
+        single_source_data.rename(columns={'Accuracy': 'Single Source Accuracy'}, inplace=True)
+        multi_source_data.rename(columns={'Accuracy': 'Multi Source Accuracy'}, inplace=True)
+        contrastive_data.rename(columns={'Accuracy': 'CL-OMNet'}, inplace=True)
+
         # Step 1: Merge the datasets on 'Shots'
-        merged_data = pd.merge(data, contrastive_data, on='Shots', how='outer')
+        merged_data = pd.merge(single_source_data, multi_source_data, on='Shots', how='outer')
+        merged_data = pd.merge(merged_data, contrastive_data, on='Shots', how='outer')
 
         # Step 2: Reshape the data into a long format for easy plotting
         combined_melted = merged_data.melt(
@@ -509,8 +485,9 @@ with tab3:
         # Combined Source Visualizations
         if combined_source_selected_visuals:
             if "Combined Bar Chart" in combined_source_selected_visuals:
-                # Step 1: Merge 'data' with 'contrastive_data'
-                merged_data = pd.merge(data, contrastive_data, on='Shots', how='outer')
+                # Step 1: Merge datasets
+                merged_data = pd.merge(single_source_data, multi_source_data, on='Shots', how='outer')
+                merged_data = pd.merge(merged_data, contrastive_data, on='Shots', how='outer')
 
                 # Adjust labels for clarity
                 combined_melted['Source Type'] = combined_melted['Source Type'].map({
@@ -641,12 +618,15 @@ with tab4:
     )
 
     if meta_learning_selected_visuals:
+        # Bar Chart
         if "Bar Chart" in meta_learning_selected_visuals:
             load_meta_accuracy_csv(chart_type="Bar Chart")
 
+        # Line Chart
         if "Line Chart" in meta_learning_selected_visuals:
             load_meta_accuracy_csv(chart_type="Line Chart")
 
+        # Data Table
         if "Data Table" in meta_learning_selected_visuals:
             load_meta_accuracy_csv(chart_type="Table")
     else:

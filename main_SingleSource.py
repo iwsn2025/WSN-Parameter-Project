@@ -12,6 +12,7 @@ from sklearn.model_selection import train_test_split
 import mmd
 from variable import *
 import random
+import csv
 
 from matplotlib import pyplot as plt
 import warnings
@@ -45,7 +46,7 @@ class DaNN(nn.Module):
 torch.manual_seed(1)
 
 
-def exp(shot=5,shuffle=False,epoch=500):
+def exp(shot=5,shuffle=False,epoch=500): # TODO: change epoch up to 1000
 
 
     dataset = pd.read_csv("simulation.csv", sep=',')
@@ -244,6 +245,16 @@ for i in range(1,6):
     val_accs.append(val_acc)
     test_accs.append(test_acc)
 
+# Save to CSV file (overwrite every time)
+csv_file = "csvs/single_source_accuracy.csv" #TODO: fix single source values to replicate figure in paper
+
+with open(csv_file, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["Shots", "Single Source Accuracy"])
+    for i, acc in enumerate(test_accs, start=1):
+        writer.writerow([i, acc])
+
+print(f"Single source accuracy data saved to {csv_file}")
 
 # Create the plot
 plt.figure(figsize=(10, 6))

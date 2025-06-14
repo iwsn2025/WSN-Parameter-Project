@@ -74,7 +74,7 @@ class MetaLearner(nn.Module):
             else:
                 dataset3 = pd.read_csv("test%d.csv" % (test_data_id), sep=',')
 
-            X3 = np.array(dataset3.drop(['A', 'C', 'P', 'LA'], 1))
+            X3 = np.array(dataset3.drop(['A', 'C', 'P', 'LA'], axis=1))
             X3 = np.float32(X3)
             X3 = scaler.transform(X3)
             y3 = np.array(dataset3['LA'])
@@ -234,6 +234,15 @@ end = time.perf_counter()
 
 
 test_accs = meta.exp(net, fw)
+
+# Save test accuracy results over time to CSV
+days = np.power(2, range(2, 2 + len(test_accs)))
+df_results_meta = pd.DataFrame({
+    "Days Passed": days,
+    "Accuracy": test_accs
+})
+df_results_meta.to_csv("csvs/meta_accuracy_over_time.csv", index=False)
+print("Saved meta learning accuracy results to meta_accuracy_over_time.csv")
 
 days = np.power(2, range(2, 2 + len(test_accs)))
 labels = range(1, len(test_accs) + 1)

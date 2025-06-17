@@ -200,7 +200,7 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
     )
 
     if simulator in ["omnet"]:
-        student_epoch=2000
+        student_epoch=1000
 
     #Student Model training process
     print("Student Model training process")
@@ -248,7 +248,7 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
             n=2
             temperature = 0.07
 
-            x_tar_mmd_mean = torch.mean(x_tar_mmd.view(5,88,-1),dim=0).squeeze()
+            x_tar_mmd_mean = torch.mean(x_tar_mmd.view(shots, 88, -1), dim=0).squeeze()
 
             # print("shape",x_src_mmd_mean.shape,x_tar_mmd_mean.shape)
 
@@ -348,64 +348,77 @@ def testWithSampleNumbers(extraSample=0,sampling_enabled=True,simulator = "tossi
             print(experiment_result)
             return experiment_result
 
-
-
-
 def test(sampling_enabled=False):
 #experiment with or without sampling algorithm using four simulators.
+    import csv
+    import os
 
     print("sampling_enabled",sampling_enabled)
-    simulators = ["ns3","cooja","tossim","omnet"]
-
-    # simulators = ["ns3"]
-
+    simulators = ["omnet"]
+    max_shots = 5
+    # simulators = ["ns3", "cooja", "tossim"]
 
     results = []
-    for beta in [0.6]:
+    csv_file = "csvs/contrastive_domain_accuracy.csv"
 
-    # for beta in [0.2,0.4,0.6,0.8,1]:
-    # for beta in [0.2,0.3,0.4,0.5,0.6]:
-
-        experiment_result=dict()
-        #for each simulator
-        for i in simulators:
-
-            sampleCount = 88*5
-
-            # Trigger sampling algorithm based on Mahalanobis distance if sampling is enabled
-            # This will regenerate selected physical data samples according to our algorithm
-            if sampling_enabled:
-                ms = MatSampler(simulator=i)
-                sc= ms.sampleByMahalanobis()
-
-                sampleCount = np.sum(sc)
-                print("----------------------------------------------------------------------------")
-                print("Experiment with sampling algorithm using %s simulator."%(i))
-                print("Sample count in each network configurations:",sampleCount)
-            else:
-                print("----------------------------------------------------------------------------")
-                print("Experiment without sampling algorithm using %s simulator."%(i))
-
-            print("----------")
-            # Utilize physical or physical sampling data to train the model
-            # Validate the model's performance using a separate testing dataset
-            # Return the model's output for further analysis
-            experiment_acc = experiment(simulator="omnet",student_epoch=1500,shots=5,sampling_enabled=sampling_enabled, alpha = 0.3,  beta = beta)
-            # experiment_acc = experiment(simulator=i,student_epoch=1500,shots=5,sampling_enabled=sampling_enabled,alpha =0, beta=0)
-
-            #save the experiment results
-            experiment_result[i]={
-                # "sampleCount":sampleCount,
-                "experiment_acc":experiment_acc
-            }
-
-        print({"alpha":beta,"res":experiment_result})
-        results.append({"alpha":beta,"res":experiment_result})
+    # Optional: remove the old CSV to reset each run
+    if os.path.exists(csv_file):
+        os.remove(csv_file)
 
 
-    #print out the experiment results
-    print("----------------------------------------------------------------------------")
-    print(results)
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Shots", "CL-OMNet"])
+
+    for shots in range(1, max_shots+1):
+        for beta in [0.6]:
+
+        # for beta in [0.2,0.4,0.6,0.8,1]:
+        # for beta in [0.2,0.3,0.4,0.5,0.6]:
+
+            experiment_result=dict()
+            #for each simulator
+            for sim in simulators:
+
+                sampleCount = 88*shots
+
+                # Trigger sampling algorithm based on Mahalanobis distance if sampling is enabled
+                # This will regenerate selected physical data samples according to our algorithm
+                if sampling_enabled:
+                    ms = MatSampler(simulator=sim)
+                    sc= ms.sampleByMahalanobis()
+
+                    sampleCount = np.sum(sc)
+                    print("----------------------------------------------------------------------------")
+                    print("Experiment with sampling algorithm using %s simulator."%sim)
+                    print("Sample count in each network configurations:",sampleCount)
+                else:
+                    print("----------------------------------------------------------------------------")
+                    print("Experiment without sampling algorithm using %s simulator."%sim)
+
+                print("----------")
+                # Utilize physical or physical sampling data to train the model
+                # Validate the model's performance using a separate testing dataset
+                # Return the model's output for further analysis
+                experiment_acc = experiment(simulator="omnet",student_epoch=1000,shots=shots,sampling_enabled=sampling_enabled, alpha = 0.3,  beta = beta)
+                # experiment_acc = experiment(simulator=i,student_epoch=1500,shots=5,sampling_enabled=sampling_enabled,alpha =0, beta=0)
+
+                #save the experiment results
+                experiment_result[sim]={
+                    # "sampleCount":sampleCount,
+                    "experiment_acc":experiment_acc
+                }
+
+            print({"alpha":beta,"res":experiment_result})
+            results.append({"alpha":beta,"res":experiment_result})
+
+        print(f"Running SAC experiment for simulator={simulators[0]}, shots={shots}")
+        acc = experiment_result[simulators[0]]["experiment_acc"]
+        with open(csv_file, mode='a', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow([shots, acc])
+
+    print(f"Contrastive domain result saved to {csv_file}")
 
     return experiment_result
 
@@ -459,23 +472,7 @@ def experimentWithDiffSampleNumber():
 
 test()
 # TODO: Make contrastive domain go into CSV with 5 shots, using values from research paper
-# Run contrastive domain experiment for omnet and 5 shots only
-sim = "omnet"
-shots = 5
 
-print(f"Running SAC experiment for simulator={sim}, shots={shots}")
-acc = experiment(simulator=sim, student_epoch=1500, shots=shots, sampling_enabled=True, alpha=0.3, beta=0.6)
-
-# Save the result to CSV
-import csv
-
-csv_file = "csvs/contrastive_domain_accuracy.csv"
-with open(csv_file, mode='w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerow(["Shots", "CL-OMNet"])
-    writer.writerow([shots, acc])
-
-print(f"Contrastive domain result saved to {csv_file}")
 
 
 # [{'beta': 0.2, 'res': {'ns3': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.4, 'res': {'ns3': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.6, 'res': {'ns3': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.8, 'res': {'ns3': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 1, 'res': {'ns3': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}]

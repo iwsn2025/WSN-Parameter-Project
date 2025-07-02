@@ -6,34 +6,38 @@ import subprocess
 import sys
 import os
 import time
+import socket
 
-# Set the page layout to wide
 st.set_page_config(layout="wide")
 
+# Check if running on Streamlit Cloud
+is_cloud = "share.streamlit.io" in socket.gethostname()
 
-# Step 1: Set a flag in session state to trigger reboot next time
-if st.sidebar.button("🔁 Reboot App"):
-    st.session_state.reboot_triggered = True
-    st.success("Rebooting app to apply changes... Please wait.")
-    st.stop()  # Stop the current run so message appears
+if not is_cloud:
+    # Reboot Button (LOCAL ONLY)
+    if st.sidebar.button("🔁 Reboot App"):
+        st.success("Rebooting app to apply changes... Please wait.")
+        st.session_state.reboot_triggered = True
+        st.stop()
 
-# Step 2: Check for flag and reboot
-if st.session_state.get("reboot_triggered", False):
-    st.session_state.reboot_triggered = False  # Reset the flag
-    python = sys.executable
-    os.execv(python, [python] + sys.argv)
+    if st.session_state.get("reboot_triggered", False):
+        st.session_state.reboot_triggered = False
+        python = sys.executable
+        os.execv(python, [python] + sys.argv)
 
-# Same pattern for Git Pull + Reboot
-if st.sidebar.button("🔁 Pull & Reboot from Git"):
-    with st.spinner("Pulling latest changes from Git..."):
-        result = subprocess.run(["git", "pull"], capture_output=True, text=True)
-        st.text(result.stdout)
-        if result.returncode != 0:
-            st.error("Git pull failed:\n" + result.stderr)
-        else:
-            st.session_state.reboot_triggered = True
-            st.success("Git pull successful. Rebooting app...")
-            st.stop()
+    # Git Pull + Reboot (LOCAL ONLY)
+    if st.sidebar.button("🔁 Pull & Reboot from Git"):
+        with st.spinner("Pulling latest changes from Git..."):
+            result = subprocess.run(["git", "pull"], capture_output=True, text=True)
+            st.text(result.stdout)
+            if result.returncode != 0:
+                st.error("Git pull failed:\n" + result.stderr)
+            else:
+                st.success("Git pull successful. Rebooting app...")
+                st.session_state.reboot_triggered = True
+                st.stop()
+else:
+    st.sidebar.info("⛔ Reboot and Git Pull are disabled on Streamlit Cloud.")
 
 # Function to create line chart data
 def generate_line_data():

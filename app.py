@@ -10,11 +10,10 @@ import socket
 
 st.set_page_config(layout="wide")
 
-# Check if running on Streamlit Cloud
-is_cloud = "share.streamlit.io" in socket.gethostname()
+is_cloud = os.environ.get("STREAMLIT_SERVER_HEADLESS") == "true"
 
 if not is_cloud:
-    # Reboot Button (LOCAL ONLY)
+    # Local Reboot
     if st.sidebar.button("🔁 Reboot App"):
         st.success("Rebooting app to apply changes... Please wait.")
         st.session_state.reboot_triggered = True
@@ -25,7 +24,7 @@ if not is_cloud:
         python = sys.executable
         os.execv(python, [python] + sys.argv)
 
-    # Git Pull + Reboot (LOCAL ONLY)
+    # Local Git Pull + Reboot
     if st.sidebar.button("🔁 Pull & Reboot from Git"):
         with st.spinner("Pulling latest changes from Git..."):
             result = subprocess.run(["git", "pull"], capture_output=True, text=True)

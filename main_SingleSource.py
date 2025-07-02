@@ -244,7 +244,7 @@ for i in range(1,6):
     print("------------------Experiment with %d shot(s) of data on one simulator (TOSSIM)--------------------------"%(i))
     print("Training data: simulation data and %d shot(s) of physical data"%(i))
     print("Testing data: physical data")
-    val_acc,test_acc = exp(shot=i,shuffle=False,epoch=400)
+    val_acc,test_acc = exp(shot=i,shuffle=False,epoch=1000)
     val_accs.append(val_acc)
     test_accs.append(test_acc)
 

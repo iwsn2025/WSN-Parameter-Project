@@ -21,7 +21,7 @@ warnings.filterwarnings("ignore")
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # DEVICE = 'cpu'
-
+# DEVICE = torch.device('cuda')
 def mmd_loss(x_src, x_tar):
     return mmd.mix_rbf_mmd2(x_src, x_tar, [GAMMA])
 
@@ -118,7 +118,8 @@ def exp(shot=5,shuffle=False,epoch=500): # TODO: change epoch up to 1000
     criterion = nn.CrossEntropyLoss()
 
 
-    for e in range(1, 0 + 1):
+    print("teacher training!")
+    for e in range(1, 0 + 200):
         teacher.train()
         y_pred, _, _ = teacher.forward(Sx)
         loss_c = criterion(y_pred, Sy)
@@ -135,6 +136,8 @@ def exp(shot=5,shuffle=False,epoch=500): # TODO: change epoch up to 1000
         # print(count/y_pred.shape[0])
 
 
+
+    print("student training!")
 
     #Student model
     student = DaNN(n_input=3, n_hidden1=120, n_hidden2=84, n_class=88)
@@ -206,27 +209,27 @@ def exp(shot=5,shuffle=False,epoch=500): # TODO: change epoch up to 1000
             optimizer2.step()
 
         with torch.no_grad():
-            y_pred, _, _ = student.forward(Tx_val)
-            count = 0
-            a = np.argmax(y_pred.detach().cpu().numpy(), axis = 1)
-            b = Ty_val.detach().cpu().numpy()
-            for it, it2 in zip(a, b):
-                if it == it2:
-                    count = count + 1
-            # print(count/y_pred.shape[0])
-            if count/y_pred.shape[0]>max_val_accuracy:
-                max_val_accuracy = count/y_pred.shape[0]
+            # y_pred, _, _ = student.forward(Tx_val)
+            # count = 0
+            # a = np.argmax(y_pred.detach().cpu().numpy(), axis = 1)
+            # b = Ty_val.detach().cpu().numpy()
+            # for it, it2 in zip(a, b):
+            #     if it == it2:
+            #         count = count + 1
+            # # print(count/y_pred.shape[0])
+            # if count/y_pred.shape[0]>max_val_accuracy:
+            #     max_val_accuracy = count/y_pred.shape[0]
 
                 #when val update, test update
-                y_pred, _, _ = student.forward(Tx_test)
-                count = 0
-                a = np.argmax(y_pred.detach().cpu().numpy(), axis = 1)
-                b = Ty_test.detach().cpu().numpy()
-                for it, it2 in zip(a, b):
+            y_pred, _, _ = student.forward(Tx_test)
+            count = 0
+            a = np.argmax(y_pred.detach().cpu().numpy(), axis = 1)
+            b = Ty_test.detach().cpu().numpy()
+            for it, it2 in zip(a, b):
                     if it == it2:
                         count = count + 1
-                # print(count/y_pred.shape[0])
-                if count/y_pred.shape[0]>max_test_accuracy:
+            # print(count/y_pred.shape[0])
+            if count/y_pred.shape[0]>max_test_accuracy:
                     max_test_accuracy = count/y_pred.shape[0]
 
     # print("One Simulator Accuracy on Validation Dataset:",max_val_accuracy)
@@ -256,25 +259,25 @@ with open(csv_file, mode='w', newline='') as file:
 
 print(f"Single source accuracy data saved to {csv_file}")
 
-# Create the plot
-plt.figure(figsize=(10, 6))
-# plt.plot(val_accs, label='Validation Accuracy', marker='o', linestyle='-')
-plt.plot(range(1,6),test_accs, label='Accuracy', marker='s', linestyle='--')
-
-plt.xticks(range(1,6))
-
-# Add title and labels
-plt.title('One simulator: TOSSIM', fontsize=16)
-plt.xlabel('Number of shots of physical data', fontsize=14)
-plt.ylabel('Accuracy', fontsize=14)
-plt.ylim(0,1)
-
-# Add legend
-# plt.legend(loc='best', fontsize=12)
-
-# Add grid
-plt.grid(True)
-
-# Display the plot
-plt.show()
+# # Create the plot
+# plt.figure(figsize=(10, 6))
+# # plt.plot(val_accs, label='Validation Accuracy', marker='o', linestyle='-')
+# plt.plot(range(1,6),test_accs, label='Accuracy', marker='s', linestyle='--')
+#
+# plt.xticks(range(1,6))
+#
+# # Add title and labels
+# plt.title('One simulator: TOSSIM', fontsize=16)
+# plt.xlabel('Number of shots of physical data', fontsize=14)
+# plt.ylabel('Accuracy', fontsize=14)
+# plt.ylim(0,1)
+#
+# # Add legend
+# # plt.legend(loc='best', fontsize=12)
+#
+# # Add grid
+# plt.grid(True)
+#
+# # Display the plot
+# plt.show()
 

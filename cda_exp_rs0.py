@@ -199,8 +199,8 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
         weight_decay=L2_WEIGHT
     )
 
-    if simulator in ["omnet"]:
-        student_epoch=1000
+    # if simulator in ["omnet"]:
+    #     student_epoch=1000
 
     #Student Model training process
     print("Student Model training process")
@@ -210,7 +210,7 @@ def experiment(simulator,student_epoch=500,shots=5,sampling_enabled=True,alpha=1
 
         #10 * 88 *5 of data for training
         temp1 = 10
-        temp2 = 88*5
+        temp2 = 88*shots
         for i in range(temp1):
 
             #each batch in source domain for training
@@ -371,7 +371,7 @@ def test(sampling_enabled=False):
         writer.writerow(["Shots", "CL-OMNet"])
 
     for shots in range(1, max_shots+1):
-        for beta in [0.6]:
+        for beta in [1]:
 
         # for beta in [0.2,0.4,0.6,0.8,1]:
         # for beta in [0.2,0.3,0.4,0.5,0.6]:
@@ -400,7 +400,7 @@ def test(sampling_enabled=False):
                 # Utilize physical or physical sampling data to train the model
                 # Validate the model's performance using a separate testing dataset
                 # Return the model's output for further analysis
-                experiment_acc = experiment(simulator="omnet",student_epoch=1000,shots=shots,sampling_enabled=sampling_enabled, alpha = 0.3,  beta = beta)
+                experiment_acc = experiment(simulator="omnet",student_epoch=2000,shots=shots,sampling_enabled=sampling_enabled, alpha = 0.3,  beta = beta)
                 # experiment_acc = experiment(simulator=i,student_epoch=1500,shots=5,sampling_enabled=sampling_enabled,alpha =0, beta=0)
 
                 #save the experiment results
@@ -471,8 +471,5 @@ def experimentWithDiffSampleNumber():
 
 
 test()
-# TODO: Make contrastive domain go into CSV with 5 shots, using values from research paper
-
-
 
 # [{'beta': 0.2, 'res': {'ns3': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.2, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.4, 'res': {'ns3': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.4, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.6, 'res': {'ns3': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.6, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 0.8, 'res': {'ns3': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 0.8, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}, {'beta': 1, 'res': {'ns3': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.7340909090909091}, 'cooja': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.6928030303030303}, 'tossim': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.7261363636363637}, 'omnet': {'beta': 1, 'sampleCount': 440, 'experiment_acc': 0.5984848484848485}}}]

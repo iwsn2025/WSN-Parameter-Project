@@ -2,10 +2,38 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import subprocess
+import sys
 import os
+import time
 
 # Set the page layout to wide
 st.set_page_config(layout="wide")
+
+
+# Step 1: Set a flag in session state to trigger reboot next time
+if st.sidebar.button("🔁 Reboot App"):
+    st.session_state.reboot_triggered = True
+    st.success("Rebooting app to apply changes... Please wait.")
+    st.stop()  # Stop the current run so message appears
+
+# Step 2: Check for flag and reboot
+if st.session_state.get("reboot_triggered", False):
+    st.session_state.reboot_triggered = False  # Reset the flag
+    python = sys.executable
+    os.execv(python, [python] + sys.argv)
+
+# Same pattern for Git Pull + Reboot
+if st.sidebar.button("🔁 Pull & Reboot from Git"):
+    with st.spinner("Pulling latest changes from Git..."):
+        result = subprocess.run(["git", "pull"], capture_output=True, text=True)
+        st.text(result.stdout)
+        if result.returncode != 0:
+            st.error("Git pull failed:\n" + result.stderr)
+        else:
+            st.session_state.reboot_triggered = True
+            st.success("Git pull successful. Rebooting app...")
+            st.stop()
 
 # Function to create line chart data
 def generate_line_data():

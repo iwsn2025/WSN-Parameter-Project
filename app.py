@@ -182,7 +182,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network 
 
 # Home Tab
 with tab1:
-    st.header("**CAREER: Advancing Network Configuration and Runtime Adaptation Methods for Industrial Wireless Sensor-Actuator Networks**")
+    st.header("**CAREERs: Advancing Network Configuration and Runtime Adaptation Methods for Industrial Wireless Sensor-Actuator Networks**")
 
     st.subheader("**Team**")
     st.write('<p><strong>Primary Investigator</strong>: <a href="https://users.cs.fiu.edu/~msha/index.htm" target="_blank"> Mo Sha</a>, Associate Professor, Knight Foundation School of Computing and Information Sciences, Florida International University</p>', unsafe_allow_html=True)

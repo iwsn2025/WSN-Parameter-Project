@@ -46,7 +46,7 @@ class DaNN(nn.Module):
 torch.manual_seed(1)
 
 
-def exp(shot=5,shuffle=False,epoch=500): # TODO: change epoch up to 1000
+def exp(shot=5,shuffle=False,epoch=500):
 
 
     dataset = pd.read_csv("simulation.csv", sep=',')
@@ -249,7 +249,7 @@ for i in range(1,6):
     test_accs.append(test_acc)
 
 # Save to CSV file (overwrite every time)
-csv_file = "csvs/single_source_accuracy.csv" #TODO: fix single source values to replicate figure in paper
+csv_file = "csvs/single_source_accuracy.csv"
 
 with open(csv_file, mode='w', newline='') as file:
     writer = csv.writer(file)

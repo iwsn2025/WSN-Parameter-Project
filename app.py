@@ -264,7 +264,7 @@ with tab2:
 
     st.session_state.active_tab = "Simulation-to-Reality Gap in Network Configuration"
 
-    if st.button("🔁 Reboot Tab"):
+    if st.button("🔁 Reboot Gap Analysis Tab"):
         reboot_tab("Simulation-to-Reality Gap in Network Configuration")
         st.rerun()
 
@@ -360,7 +360,7 @@ with tab3:
 
     st.session_state.active_tab = "Closing the Gap"
 
-    if st.button("🔁 Reboot Tab"):
+    if st.button("🔁 Reboot Closing the Gap Tab"):
         reboot_tab("Closing the Gap")
         st.rerun()
 
@@ -615,7 +615,7 @@ with tab4:
 
     st.session_state.active_tab = "Runtime Adaptation"
 
-    if st.button("🔁 Reboot Tab"):
+    if st.button("🔁 Reboot Runtime Adaptation Tab"):
         reboot_tab("Runtime Adaptation")
         st.rerun()
 

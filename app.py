@@ -398,8 +398,6 @@ with tab3:
         reset_widget("single_source", "contrastive_domain", "multi_source", "combined_source")
         st.session_state["reboot_flag"] = False # Clear the flag
 
-    st.header("Simulation-to-Reality Gap in Network Configuration")
-
     st.header("Our solutions to close the simulation-to-reality gap in network configuration.")
 
     # Load precomputed data

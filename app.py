@@ -398,6 +398,16 @@ with tab3:
         reset_widget("single_source", "contrastive_domain", "multi_source", "combined_source")
         st.session_state["reboot_flag"] = False # Clear the flag
 
+    # --- Initialize session state for multiselect ---
+    if "single_source" not in st.session_state:
+        st.session_state["single_source"] = []
+    if "contrastive_domain" not in st.session_state:
+        st.session_state["contrastive_domain"] = []
+    if "multi_source" not in st.session_state:
+        st.session_state["multi_source"] = []
+    if "combined_source" not in st.session_state:
+        st.session_state["combined_source"] = []
+
     st.header("Our solutions to close the simulation-to-reality gap in network configuration.")
 
     # Load precomputed data
@@ -655,6 +665,12 @@ with tab4:
         # Fully reset the widget so it appears empty
         reset_widget("meta_learning", "domain_adaptation")
         st.session_state["reboot_flag"] = False  # Clear the flag
+
+    # --- Initialize session state for multiselect ---
+    if "meta_learning" not in st.session_state:
+        st.session_state["meta_learning"] = []
+    if "domain_adaptation" not in st.session_state:
+        st.session_state["domain_adaptation"] = []
 
     st.header("Meta Learning Results")
 

@@ -281,6 +281,10 @@ with tab2:
 
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
+    # --- Initialize session state for multiselect ---
+    if "selected_visuals" not in st.session_state:
+        st.session_state.selected_visuals = []
+
     # Load experiment data from CSV
     gap_df = load_experiment_data()
 

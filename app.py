@@ -8,7 +8,7 @@ import time
 
 st.set_page_config(layout="wide")
 
-is_cloud = os.environ.get("STREAMLIT_SERVER_HEADLESS") == "true"
+is_cloud = os.environ.get("STREAMLIT_DEPLOYMENT") == "true"
 
 # Show reboot button only if running on Streamlit Cloud
 if is_cloud:

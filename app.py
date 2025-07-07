@@ -331,6 +331,7 @@ with tab2:
     )
 
     if gap_analysis_selected_visuals:
+        st.write("✅ You selected:", gap_analysis_selected_visuals)
         if "Bar Chart" in gap_analysis_selected_visuals:
             fig = px.bar(
                 gap_df,

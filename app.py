@@ -281,15 +281,15 @@ with tab2:
     if st.button("🔁 Reboot Gap Analysis Tab"):
         # Clear relevant session state before rerun
         st.session_state["Simulation-to-Reality Gap in Network Configuration_reboot"] = True
-        st.session_state["reboot_flag"] = True # <- flag to trigger reset on next run
+        st.session_state["gap_reboot_flag"] = True # <- flag to trigger reset on next run
         st.rerun()
 
     # Reset message
-    if st.session_state.get("reboot_flag"):
+    if st.session_state.get("gap_reboot_flag"):
         st.success("Simulation-to-Reality Gap tab has been reset!")
         # Fully reset the widget so it appears empty
         reset_widget("gap_analysis_selected_visuals")
-        st.session_state["reboot_flag"] = False # Clear the flag
+        st.session_state["gap_reboot_flag"] = False # Clear the flag
 
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
@@ -388,15 +388,15 @@ with tab3:
     if st.button("🔁 Reboot Closing the Gap Tab"):
         # Clear relevant session state before rerun
         st.session_state["Closing the Gap_reboot"] = True
-        st.session_state["reboot_flag"] = True # <- flag to trigger reset on next run
+        st.session_state["closing_reboot_flag"] = True # <- flag to trigger reset on next run
         st.rerun()
 
     # Reset message
-    if st.session_state.get("reboot_flag"):
+    if st.session_state.get("closing_reboot_flag"):
         st.success("Closing the Gap tab has been reset!")
         # Fully reset the widget so it appears empty
         reset_widget("single_source", "contrastive_domain", "multi_source", "combined_source")
-        st.session_state["reboot_flag"] = False # Clear the flag
+        st.session_state["closing_reboot_flag"] = False # Clear the flag
 
     # --- Initialize session state for multiselect ---
     if "single_source" not in st.session_state:
@@ -656,15 +656,15 @@ with tab4:
     if st.button("🔁 Reboot Runtime Adaptation Tab"):
         # Clear relevant session state before rerun
         st.session_state["Runtime Adaptation_reboot"] = True
-        st.session_state["reboot_flag"] = True  # <- flag to trigger reset on next run
+        st.session_state["domain_reboot_flag"] = True  # <- flag to trigger reset on next run
         st.rerun()
 
     # Reset message
-    if st.session_state.get("reboot_flag"):
+    if st.session_state.get("domain_reboot_flag"):
         st.success("Runtime Adaptation tab has been reset!")
         # Fully reset the widget so it appears empty
         reset_widget("meta_learning", "domain_adaptation")
-        st.session_state["reboot_flag"] = False  # Clear the flag
+        st.session_state["domain_reboot_flag"] = False  # Clear the flag
 
     # --- Initialize session state for multiselect ---
     if "meta_learning" not in st.session_state:

@@ -6,39 +6,39 @@ import os
 
 st.set_page_config(layout="wide")
 
-def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None):
-    """Renders sidebar controls with a reboot button for a specific tab or the full app."""
-    is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
-
-    if is_cloud:
-        label = f"🔁 Refresh App"
-        reboot = st.button(label)
-
-        st.caption(
-            "Click to soft-reboot the app.\n\n"
-            "This will rerun the script and refresh any recent changes you've pushed to the repo."
-        )
-
-        if reboot:
-            if tab_name:
-                st.session_state[f"{tab_name}_reboot"] = True
-                st.session_state[f"{tab_name}_reboot_flag"] = True
-            else:
-                st.success("Rebooting app... Please wait.")
-            st.rerun()
-
-    else:
-        st.info("This app is running locally.\n\nThe reboot button is only available on Streamlit Cloud.")
-
-    # After rerun: check if reset is needed
-    if tab_name and st.session_state.get(f"{tab_name}_reboot_flag", False):
-        st.success(f"App has been refreshed!")
-
-        # Reset specified widgets
-        if widget_keys_to_reset:
-            reset_widget(*widget_keys_to_reset)
-
-        st.session_state[f"{tab_name}_reboot_flag"] = False
+# def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None):
+#     """Renders sidebar controls with a reboot button for a specific tab or the full app."""
+#     is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
+#
+#     if is_cloud:
+#         label = f"🔁 Refresh App"
+#         reboot = st.button(label)
+#
+#         st.caption(
+#             "Click to soft-reboot the app.\n\n"
+#             "This will rerun the script and refresh any recent changes you've pushed to the repo."
+#         )
+#
+#         if reboot:
+#             if tab_name:
+#                 st.session_state[f"{tab_name}_reboot"] = True
+#                 st.session_state[f"{tab_name}_reboot_flag"] = True
+#             else:
+#                 st.success("Rebooting app... Please wait.")
+#             st.rerun()
+#
+#     else:
+#         st.info("This app is running locally.\n\nThe reboot button is only available on Streamlit Cloud.")
+#
+#     # After rerun: check if reset is needed
+#     if tab_name and st.session_state.get(f"{tab_name}_reboot_flag", False):
+#         st.success(f"App has been refreshed!")
+#
+#         # Reset specified widgets
+#         if widget_keys_to_reset:
+#             reset_widget(*widget_keys_to_reset)
+#
+#         st.session_state[f"{tab_name}_reboot_flag"] = False
 
 # st.write("Environment Variables:")
 # st.code("\n".join(f"{k}={v}" for k, v in os.environ.items()))

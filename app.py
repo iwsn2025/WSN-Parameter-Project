@@ -261,6 +261,17 @@ with tab1:
 
 # Gap Analysis Tab
 with tab2:
+
+    st.session_state.active_tab = "Simulation-to-Reality Gap in Network Configuration"
+
+    if st.button("🔁 Reboot Tab"):
+        reboot_tab("Simulation-to-Reality Gap in Network Configuration")
+        st.rerun()
+
+    if st.session_state.get("Simulation-to-Reality Gap in Network Configuration_reboot", False):
+        st.success("Simulation-to-Reality Gap tab has been reset!")
+        st.session_state["Simulation-to-Reality Gap in Network Configuration_reboot"] = False
+
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
     # Load experiment data from CSV

@@ -2,15 +2,14 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import sys
 import os
-import time
 
 st.set_page_config(layout="wide")
 
-is_cloud = os.environ.get("STREAMLIT_DEPLOYMENT") == "true"
+# ✅ Reliable check for Streamlit Cloud
+is_cloud = os.environ.get("STREAMLIT_ENV") == "cloud"
 
-# Show reboot button only if running on Streamlit Cloud
+# Sidebar reboot button
 if is_cloud:
     if st.sidebar.button("🔁 Reboot App"):
         st.success("Rebooting app (Cloud mode)...")

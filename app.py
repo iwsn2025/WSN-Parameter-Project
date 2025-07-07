@@ -384,13 +384,19 @@ with tab3:
 
     st.session_state.active_tab = "Closing the Gap"
 
+    # Reboot button logic
     if st.button("🔁 Reboot Closing the Gap Tab"):
-        reboot_tab("Closing the Gap")
+        # Clear relevant session state before rerun
+        st.session_state["Closing the Gap_reboot"] = True
+        st.session_state["reboot_flag"] = True # <- flag to trigger reset on next run
         st.rerun()
 
-    if st.session_state.get("Closing the Gap_reboot", False):
+    # Reset message
+    if st.session_state.get("reboot_flag"):
         st.success("Closing the Gap tab has been reset!")
-        st.session_state["Closing the Gap_reboot"] = False
+        # Fully reset the widget so it appears empty
+        reset_widget("single_source", "contrastive_domain", "multi_source", "combined_source")
+        st.session_state["reboot_flag"] = False # Clear the flag
 
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
@@ -541,7 +547,7 @@ with tab3:
             "**See the comparisons among different solutions.**",
             [
                 "Combined Bar Chart", "Combined Line Chart", "Combined Table",
-            ]
+            ], key="combined_source"
         )
 
         single_source_data.rename(columns={'Accuracy': 'Single Source Accuracy'}, inplace=True)

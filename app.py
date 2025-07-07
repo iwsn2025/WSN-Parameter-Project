@@ -6,9 +6,6 @@ import os
 
 st.set_page_config(layout="wide")
 
-import time
-st.write("Start time:", time.process_time())
-
 def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None):
     """Renders sidebar controls with a reboot button for a specific tab or the full app."""
     is_cloud = os.environ.get("SF_PARTNER") == "streamlit"

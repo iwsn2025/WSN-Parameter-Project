@@ -317,13 +317,13 @@ with tab2:
              'source code and data</a>]</p>', unsafe_allow_html=True)
 
     st.subheader("Select Visualizations to Display:")
-    single_source_selected_visuals = st.multiselect(
+    gap_analysis_selected_visuals = st.multiselect(
         "Choose one or more visualizations",
         ["Bar Chart", "Line Chart", "Scatter Plot", "Data Table"]
     )
 
-    if single_source_selected_visuals:
-        if "Bar Chart" in single_source_selected_visuals:
+    if gap_analysis_selected_visuals:
+        if "Bar Chart" in gap_analysis_selected_visuals:
             fig = px.bar(
                 gap_df,
                 x='Training and testing on different data sets',
@@ -342,7 +342,7 @@ with tab2:
             )
             st.plotly_chart(fig)
 
-        if "Line Chart" in single_source_selected_visuals:
+        if "Line Chart" in gap_analysis_selected_visuals:
             line_data = generate_line_data()
             fig = px.line(
                 line_data,
@@ -353,7 +353,7 @@ with tab2:
             )
             st.plotly_chart(fig)
 
-        if "Scatter Plot" in single_source_selected_visuals:
+        if "Scatter Plot" in gap_analysis_selected_visuals:
             scatter_data = generate_scatter_data()
             fig = px.scatter(
                 scatter_data,
@@ -365,7 +365,7 @@ with tab2:
             )
             st.plotly_chart(fig)
 
-        if "Data Table" in single_source_selected_visuals:
+        if "Data Table" in gap_analysis_selected_visuals:
             st.subheader("Gap Analysis Table")
             st.dataframe(gap_df[['Training and testing on different data sets', 'Prediction Accuracy']])
     else:

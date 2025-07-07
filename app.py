@@ -6,39 +6,32 @@ import os
 
 st.set_page_config(layout="wide")
 
-# def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None):
-#     """Renders sidebar controls with a reboot button for a specific tab or the full app."""
-#     is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
-#
-#     if is_cloud:
-#         label = f"🔁 Refresh App"
-#         reboot = st.button(label)
-#
-#         st.caption(
-#             "Click to soft-reboot the app.\n\n"
-#             "This will rerun the script and refresh any recent changes you've pushed to the repo."
-#         )
-#
-#         if reboot:
-#             if tab_name:
-#                 st.session_state[f"{tab_name}_reboot"] = True
-#                 st.session_state[f"{tab_name}_reboot_flag"] = True
-#             else:
-#                 st.success("Rebooting app... Please wait.")
-#             st.rerun()
-#
-#     else:
-#         st.info("This app is running locally.\n\nThe reboot button is only available on Streamlit Cloud.")
-#
-#     # After rerun: check if reset is needed
-#     if tab_name and st.session_state.get(f"{tab_name}_reboot_flag", False):
-#         st.success(f"App has been refreshed!")
-#
-#         # Reset specified widgets
-#         if widget_keys_to_reset:
-#             reset_widget(*widget_keys_to_reset)
-#
-#         st.session_state[f"{tab_name}_reboot_flag"] = False
+def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None, show_button: bool = True):
+    is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
+
+    # --- REBOOT LOGIC ---
+    if tab_name and st.session_state.get(f"{tab_name}_reboot_flag", False):
+        st.success(f"App has been refreshed!")
+        if widget_keys_to_reset:
+            reset_widget(*widget_keys_to_reset)
+        st.session_state[f"{tab_name}_reboot_flag"] = False
+
+    # --- REBOOT BUTTON ---
+    if is_cloud and show_button:
+        label = f"🔁 Refresh App"
+        reboot = st.button(label)
+
+        st.caption("Click to soft-reboot the app. This will rerun the script and refresh pushed code/configs.")
+
+        if reboot:
+            if tab_name:
+                st.session_state[f"{tab_name}_reboot"] = True
+                st.session_state[f"{tab_name}_reboot_flag"] = True
+            else:
+                st.success("Rebooting app... Please wait.")
+            st.rerun()
+    elif not is_cloud and show_button:
+        st.info("This app is running locally. The refresh button is only available on Streamlit Cloud.")
 
 # st.write("Environment Variables:")
 # st.code("\n".join(f"{k}={v}" for k, v in os.environ.items()))
@@ -202,7 +195,6 @@ tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network 
 # Home Tab
 with tab1:
     st.session_state.active_tab = "Home"
-    # app_refresh("Home")
 
     st.header("**CAREER: Advancing Network Configuration and Runtime Adaptation Methods for Industrial Wireless Sensor-Actuator Networks**")
 
@@ -281,14 +273,18 @@ with tab1:
     st.write('<p><strong>[C]</strong> Xiao Cheng and Mo Sha, <a href="https://users.cs.fiu.edu/~msha/publications/icnp21.pdf" target="_blank">  ATRIA: Autonomous Traffic-Aware Transmission Scheduling for Industrial Wireless Sensor-Actuator Networks</a>, IEEE International Conference on Network Protocols (ICNP), November 2021, acceptance ratio: 38/154 = 24.6%. [<a href="https://github.com/iiot-research/Autonomous-Scheduling" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
     st.write('<p><strong>[C]</strong> Junyang Shi, Mo Sha, and Xi Peng, <a href="https://users.cs.fiu.edu/~msha/publications/nsdi21.pdf" target="_blank"> Adapting Wireless Mesh Network Configuration from Simulation to Reality via Deep Learning based Domain Adaptation</a>, USENIX Symposium on Networked Systems Design and Implementation (NSDI), April 2021, acceptance ratio (fall deadline): 40/255 = 15.6%. [<a href="https://github.com/aitianma/WSNConfDomainAdaptation" target="_blank">source code and data</a>]</p>', unsafe_allow_html=True)
 
+    with st.container():
+        st.markdown("### ⚙️ App Refresh Controls")
+        app_refresh(tab_name="Home")  # UI-only: just renders the button
+
 # Gap Analysis Tab
 with tab2:
     st.session_state.active_tab = "Simulation-to-Reality Gap in Network Configuration"
 
-    # app_refresh(
-    #     tab_name="Simulation-to-Reality Gap in Network Configuration",
-    #     widget_keys_to_reset=["gap_analysis_selected_visuals"]
-    # )
+    app_refresh(
+        tab_name="Simulation-to-Reality Gap in Network Configuration",
+        widget_keys_to_reset=["gap_analysis_selected_visuals"]
+    )
 
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
@@ -379,14 +375,27 @@ with tab2:
     else:
         st.info("No data selected to display.")
 
+    with st.container():
+        st.markdown("### ⚙️ App Refresh Controls")
+        app_refresh(tab_name="Simulation-to-Reality Gap in Network Configuration")  # UI-only: just renders the button
+
 with tab3:
 
     st.session_state.active_tab = "Closing the Gap"
 
-    # app_refresh(
-    #     tab_name="Closing the Gap",
-    #     widget_keys_to_reset=["single_source", "contrastive_domain", "multi_source", "combined_source"]
-    # )
+    app_refresh(
+        tab_name="Closing the Gap",
+        widget_keys_to_reset=["single_source", "contrastive_domain", "multi_source", "combined_source"]
+    )
+
+    if "single_source" not in st.session_state:
+        st.session_state["single_source"] = []
+    if "contrastive_domain" not in st.session_state:
+        st.session_state["contrastive_domain"] = []
+    if "multi_source" not in st.session_state:
+        st.session_state["multi_source"] = []
+    if "combined_source" not in st.session_state:
+        st.session_state["combined_source"] = []
 
     st.header("Our solutions to close the simulation-to-reality gap in network configuration.")
 
@@ -628,14 +637,23 @@ with tab3:
     else:
         st.error("No valid data available to display.")
 
+    with st.container():
+        st.markdown("### ⚙️ App Refresh Controls")
+        app_refresh(tab_name="Closing the Gap")  # UI-only: just renders the button
+
 # Meta Learning Tab
 with tab4:
     st.session_state.active_tab = "Runtime Adaptation"
 
-    # app_refresh(
-    #     tab_name="Runtime Adaptation",
-    #     widget_keys_to_reset=["domain_adaptation", "meta_learning"]
-    # )
+    app_refresh(
+        tab_name="Runtime Adaptation",
+        widget_keys_to_reset=["domain_adaptation", "meta_learning"]
+    )
+
+    if "domain_adaptation" not in st.session_state:
+        st.session_state["domain_adaptation"] = []
+    if "meta_learning" not in st.session_state:
+        st.session_state["meta_learning"] = []
 
     st.header("Meta Learning Results")
 
@@ -713,3 +731,7 @@ with tab4:
             load_meta_accuracy_csv(chart_type="Table")
     else:
         st.info("No data selected to display in Meta Learning Results.")
+
+    with st.container():
+        st.markdown("### ⚙️ App Refresh Controls")
+        app_refresh(tab_name="Runtime Adaptation")  # UI-only: just renders the button

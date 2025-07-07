@@ -37,7 +37,8 @@ def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None, show_bu
     if show_button:
         if is_cloud:
             label = f"🔁 Refresh App"
-            reboot = st.button(label)
+            button_key = f"reboot_button_{tab_name}" if tab_name else "reboot_button"
+            reboot = st.button(label, key=button_key)
 
             st.caption(
                 "Click to soft-reboot the app.\n\n"

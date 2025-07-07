@@ -6,10 +6,10 @@ import os
 
 st.set_page_config(layout="wide")
 
-import time, psutil
-st.write("⏱️ App started at:", time.time())
-st.write("🧠 Session keys:", list(st.session_state.keys()))
-st.write("💾 Memory usage (MB):", psutil.Process().memory_info().rss / 1024**2)
+# import time, psutil
+# st.write("⏱️ App started at:", time.time())
+# st.write("🧠 Session keys:", list(st.session_state.keys()))
+# st.write("💾 Memory usage (MB):", psutil.Process().memory_info().rss / 1024**2)
 
 def reset_widget(*keys):
     """Helper to delete keys from session state (e.g., to clear multiselects)."""

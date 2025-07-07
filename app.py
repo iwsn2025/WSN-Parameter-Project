@@ -329,7 +329,7 @@ with tab2:
 
     # --- Initialize session state for multiselect ---
     if "gap_analysis_selected_visuals" not in st.session_state:
-        st.session_state.selected_visuals = []
+        st.session_state["gap_analysis_selected_visuals"] = []
 
     if gap_analysis_selected_visuals:
         if "Bar Chart" in gap_analysis_selected_visuals:

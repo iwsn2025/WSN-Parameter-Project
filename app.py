@@ -6,6 +6,12 @@ import os
 
 st.set_page_config(layout="wide")
 
+def reset_widget(*keys):
+    """Helper to delete keys from session state (e.g., to clear multiselects)."""
+    for key in keys:
+        if key in st.session_state:
+            del st.session_state[key]
+
 def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None, show_button: bool = True):
     """Handles reboot logic and optionally shows a reboot button for a specific tab."""
     is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
@@ -64,40 +70,6 @@ def load_experiment_data():
     csv_path = os.path.join(os.path.dirname(__file__), "csvs/gap_experiment_results.csv")
     df = pd.read_csv(csv_path)
     return df
-
-# Function to read the contrastive domain log data (with caching)
-@st.cache_data
-def read_contrastive_log(path="contrastive_log.txt"):
-    epochs = []
-    accuracies = []
-    with open(path, 'r') as f:
-        for line in f:
-            if "epoch" in line.lower() and "accuraccy" in line.lower():
-                parts = line.strip().split(":")
-                epoch = parts[0].split()[-1]
-                acc = float(parts[-1])
-                epochs.append(f"Epoch {epoch}")
-                accuracies.append(acc)
-    return pd.DataFrame({"Epoch": epochs, "Prediction Accuracy": accuracies})
-
-
-# Function to display the contrastive domain chartAdd commentMore actions
-def contrastive_domain_chart():
-    # Fetching contrastive domain training log
-    df_contrastive = read_contrastive_log()
-
-    st.subheader("Contrastive Domain: Teacher Model Accuracy by Epoch")
-    fig = px.bar(
-        df_contrastive,
-        x="Epoch",
-        y="Prediction Accuracy",
-        color="Epoch",
-        text_auto=True,
-        range_y=[0, 1],
-        labels={"Epoch": "Training Epoch", "Prediction Accuracy": "Accuracy"},
-        title="Teacher Model Accuracy during Contrastive Domain Training"
-    )
-    st.plotly_chart(fig, use_container_width=True)
 
 # Function to load experiment data for main-performance-degradation
 @st.cache_data
@@ -183,20 +155,6 @@ def load_meta_accuracy_csv(chart_type):
 
     except FileNotFoundError:
         st.error("CSV file not found. Please ensure the file 'meta_accuracy_over_time.csv' is in the correct location.")
-
-# Store current active tab in session state
-if "active_tab" not in st.session_state:
-    st.session_state.active_tab = "Home"
-
-# Function to simulate reboot of current tab
-def reboot_tab(tab_name):
-    st.session_state[f"{tab_name}_reboot"] = True
-
-def reset_widget(*keys):
-    """Helper to delete keys from session state (e.g., to clear multiselects)."""
-    for key in keys:
-        if key in st.session_state:
-            del st.session_state[key]
 
 # Tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network Configuration", "Closing the Gap", "Runtime Adaptation"])

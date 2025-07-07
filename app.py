@@ -285,10 +285,10 @@ with tab1:
 with tab2:
     st.session_state.active_tab = "Simulation-to-Reality Gap in Network Configuration"
 
-    app_refresh(
-        tab_name="Simulation-to-Reality Gap in Network Configuration",
-        widget_keys_to_reset=["gap_analysis_selected_visuals"]
-    )
+    # app_refresh(
+    #     tab_name="Simulation-to-Reality Gap in Network Configuration",
+    #     widget_keys_to_reset=["gap_analysis_selected_visuals"]
+    # )
 
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
@@ -383,10 +383,10 @@ with tab3:
 
     st.session_state.active_tab = "Closing the Gap"
 
-    app_refresh(
-        tab_name="Closing the Gap",
-        widget_keys_to_reset=["single_source", "contrastive_domain", "multi_source", "combined_source"]
-    )
+    # app_refresh(
+    #     tab_name="Closing the Gap",
+    #     widget_keys_to_reset=["single_source", "contrastive_domain", "multi_source", "combined_source"]
+    # )
 
     st.header("Our solutions to close the simulation-to-reality gap in network configuration.")
 
@@ -632,10 +632,10 @@ with tab3:
 with tab4:
     st.session_state.active_tab = "Runtime Adaptation"
 
-    app_refresh(
-        tab_name="Runtime Adaptation",
-        widget_keys_to_reset=["domain_adaptation", "meta_learning"]
-    )
+    # app_refresh(
+    #     tab_name="Runtime Adaptation",
+    #     widget_keys_to_reset=["domain_adaptation", "meta_learning"]
+    # )
 
     st.header("Meta Learning Results")
 

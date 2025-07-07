@@ -7,31 +7,40 @@ import os
 st.set_page_config(layout="wide")
 
 def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None, show_button: bool = True):
+    """Handles reboot logic and optionally shows a reboot button for a specific tab."""
     is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
 
-    # --- REBOOT LOGIC ---
+    # --- REBOOT RESET LOGIC ---
     if tab_name and st.session_state.get(f"{tab_name}_reboot_flag", False):
         st.success(f"App has been refreshed!")
+
+        # Reset specified widgets
         if widget_keys_to_reset:
             reset_widget(*widget_keys_to_reset)
+
+        # Clear the flag
         st.session_state[f"{tab_name}_reboot_flag"] = False
 
-    # --- REBOOT BUTTON ---
-    if is_cloud and show_button:
-        label = f"🔁 Refresh App"
-        reboot = st.button(label)
+    # --- BUTTON UI (Optional) ---
+    if show_button:
+        if is_cloud:
+            label = f"🔁 Refresh App"
+            reboot = st.button(label)
 
-        st.caption("Click to soft-reboot the app. This will rerun the script and refresh pushed code/configs.")
+            st.caption(
+                "Click to soft-reboot the app.\n\n"
+                "This will rerun the script and refresh any recent changes you've pushed to the repo."
+            )
 
-        if reboot:
-            if tab_name:
-                st.session_state[f"{tab_name}_reboot"] = True
-                st.session_state[f"{tab_name}_reboot_flag"] = True
-            else:
-                st.success("Rebooting app... Please wait.")
-            st.rerun()
-    elif not is_cloud and show_button:
-        st.info("This app is running locally. The refresh button is only available on Streamlit Cloud.")
+            if reboot:
+                if tab_name:
+                    st.session_state[f"{tab_name}_reboot"] = True
+                    st.session_state[f"{tab_name}_reboot_flag"] = True
+                else:
+                    st.success("Rebooting app... Please wait.")
+                st.rerun()
+        else:
+            st.info("This app is running locally. The refresh button is only available on Streamlit Cloud.")
 
 # st.write("Environment Variables:")
 # st.code("\n".join(f"{k}={v}" for k, v in os.environ.items()))
@@ -195,6 +204,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network 
 # Home Tab
 with tab1:
     st.session_state.active_tab = "Home"
+    app_refresh(tab_name="Home", show_button=False)
 
     st.header("**CAREER: Advancing Network Configuration and Runtime Adaptation Methods for Industrial Wireless Sensor-Actuator Networks**")
 
@@ -275,7 +285,7 @@ with tab1:
 
     with st.container():
         st.markdown("### ⚙️ App Refresh Controls")
-        app_refresh(tab_name="Home")  # UI-only: just renders the button
+        app_refresh(tab_name="Home", show_button=True)  # UI-only: just renders the button
 
 # Gap Analysis Tab
 with tab2:
@@ -283,7 +293,8 @@ with tab2:
 
     app_refresh(
         tab_name="Simulation-to-Reality Gap in Network Configuration",
-        widget_keys_to_reset=["gap_analysis_selected_visuals"]
+        widget_keys_to_reset=["gap_analysis_selected_visuals"],
+        show_button=False
     )
 
     st.header("Simulation-to-Reality Gap in Network Configuration")
@@ -377,7 +388,7 @@ with tab2:
 
     with st.container():
         st.markdown("### ⚙️ App Refresh Controls")
-        app_refresh(tab_name="Simulation-to-Reality Gap in Network Configuration")  # UI-only: just renders the button
+        app_refresh(tab_name="Simulation-to-Reality Gap in Network Configuration", show_button=True)  # UI-only: just renders the button
 
 with tab3:
 
@@ -385,7 +396,8 @@ with tab3:
 
     app_refresh(
         tab_name="Closing the Gap",
-        widget_keys_to_reset=["single_source", "contrastive_domain", "multi_source", "combined_source"]
+        widget_keys_to_reset=["single_source", "contrastive_domain", "multi_source", "combined_source"],
+        show_button=False
     )
 
     if "single_source" not in st.session_state:
@@ -639,7 +651,7 @@ with tab3:
 
     with st.container():
         st.markdown("### ⚙️ App Refresh Controls")
-        app_refresh(tab_name="Closing the Gap")  # UI-only: just renders the button
+        app_refresh(tab_name="Closing the Gap", show_button=True)  # UI-only: just renders the button
 
 # Meta Learning Tab
 with tab4:
@@ -647,7 +659,8 @@ with tab4:
 
     app_refresh(
         tab_name="Runtime Adaptation",
-        widget_keys_to_reset=["domain_adaptation", "meta_learning"]
+        widget_keys_to_reset=["domain_adaptation", "meta_learning"],
+        show_button=False
     )
 
     if "domain_adaptation" not in st.session_state:
@@ -734,4 +747,4 @@ with tab4:
 
     with st.container():
         st.markdown("### ⚙️ App Refresh Controls")
-        app_refresh(tab_name="Runtime Adaptation")  # UI-only: just renders the button
+        app_refresh(tab_name="Runtime Adaptation", show_button=True)  # UI-only: just renders the button

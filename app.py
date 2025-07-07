@@ -202,7 +202,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network 
 # Home Tab
 with tab1:
     st.session_state.active_tab = "Home"
-    app_refresh("Home")
+    # app_refresh("Home")
 
     st.header("**CAREER: Advancing Network Configuration and Runtime Adaptation Methods for Industrial Wireless Sensor-Actuator Networks**")
 

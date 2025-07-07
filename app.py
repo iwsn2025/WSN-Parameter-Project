@@ -9,13 +9,20 @@ st.set_page_config(layout="wide")
 # Detect Streamlit Cloud based on unique env variable
 is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
 
-# Sidebar reboot button
-if is_cloud:
-    if st.sidebar.button("🔁 Reboot App"):
-        st.success("Rebooting app (Cloud mode)...")
-        st.rerun()
-else:
-    st.sidebar.info("🔁 Reboot only available on Streamlit Cloud.")
+# --- SIDEBAR UI ---
+with st.sidebar:
+    st.markdown("## 🔧 App Controls")
+
+    if is_cloud:
+        reboot = st.button("🔁 Reboot App")
+        st.caption(
+            "Click to soft-reboot the app.\n\nThis will rerun the script and refresh any recent changes you've pushed to the repo. Useful after code updates or config changes.")
+
+        if reboot:
+            st.success("Rebooting app... Please wait.")
+            st.rerun()
+    else:
+        st.info("This app is running locally.\n\nThe reboot button is only available on Streamlit Cloud.")
 
 # st.write("Environment Variables:")
 # st.code("\n".join(f"{k}={v}" for k, v in os.environ.items()))

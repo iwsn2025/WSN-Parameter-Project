@@ -357,6 +357,19 @@ with tab2:
         st.info("No data selected to display.")
 
 with tab3:
+
+    st.session_state.active_tab = "Closing the Gap"
+
+    if st.button("🔁 Reboot Tab"):
+        reboot_tab("Closing the Gap")
+        st.rerun()
+
+    if st.session_state.get("Closing the Gap_reboot", False):
+        st.success("Closing the Gap tab has been reset!")
+        st.session_state["Closing the Gap_reboot"] = False
+
+    st.header("Simulation-to-Reality Gap in Network Configuration")
+
     st.header("Our solutions to close the simulation-to-reality gap in network configuration.")
 
     # Load precomputed data
@@ -599,6 +612,17 @@ with tab3:
 
 # Meta Learning Tab
 with tab4:
+
+    st.session_state.active_tab = "Runtime Adaptation"
+
+    if st.button("🔁 Reboot Tab"):
+        reboot_tab("Runtime Adaptation")
+        st.rerun()
+
+    if st.session_state.get("Runtime Adaptation_reboot", False):
+        st.success("Runtime Adaptation tab has been reset!")
+        st.session_state["Runtime Adaptation_reboot"] = False
+
     st.header("Meta Learning Results")
 
     st.write("Using domain adaptation to adapt the network configuration at runtime.")

@@ -159,11 +159,29 @@ def load_meta_accuracy_csv(chart_type):
     except FileNotFoundError:
         st.error("CSV file not found. Please ensure the file 'meta_accuracy_over_time.csv' is in the correct location.")
 
+# Store current active tab in session state
+if "active_tab" not in st.session_state:
+    st.session_state.active_tab = "Home"
+
+# Function to simulate reboot of current tab
+def reboot_tab(tab_name):
+    st.session_state[f"{tab_name}_reboot"] = True
+
 # Tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network Configuration", "Closing the Gap", "Runtime Adaptation"])
 
 # Home Tab
 with tab1:
+    st.session_state.active_tab = "Home"
+
+    if st.button("🔁 Reboot Home Tab"):
+        reboot_tab("Home")
+        st.rerun()
+
+    if st.session_state.get("Home_reboot", False):
+        st.success("Home tab has been reset!")
+        st.session_state["Home_reboot"] = False
+
     st.header("**CAREER: Advancing Network Configuration and Runtime Adaptation Methods for Industrial Wireless Sensor-Actuator Networks**")
 
     st.subheader("**Team**")

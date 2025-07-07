@@ -174,6 +174,11 @@ if "active_tab" not in st.session_state:
 def reboot_tab(tab_name):
     st.session_state[f"{tab_name}_reboot"] = True
 
+# Helper function to reset widgets (selections in multiselect boxes)
+def reset_widget(key):
+    if key in st.session_state:
+        del st.session_state[key]
+
 # Tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network Configuration", "Closing the Gap", "Runtime Adaptation"])
 
@@ -275,13 +280,15 @@ with tab2:
     if st.button("🔁 Reboot Gap Analysis Tab"):
         # Clear relevant session state before rerun
         st.session_state["Simulation-to-Reality Gap in Network Configuration_reboot"] = True
-        st.session_state["single_source_selected_visuals"] = []
+        st.session_state["reboot_flag"] = True # <- flag to trigger reset on next run
         st.rerun()
 
     # Reset message
-    if st.session_state.get("Simulation-to-Reality Gap in Network Configuration_reboot", False):
+    if st.session_state.get("reboot_flag"):
         st.success("Simulation-to-Reality Gap tab has been reset!")
-        st.session_state["Simulation-to-Reality Gap in Network Configuration_reboot"] = False
+        # Fully reset the widget so it appears empty
+        reset_widget("gap_analysis_selected_visuals")
+        st.session_state["reboot_flag"] = False # Clear the flag
 
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
@@ -319,7 +326,8 @@ with tab2:
     st.subheader("Select Visualizations to Display:")
     gap_analysis_selected_visuals = st.multiselect(
         "Choose one or more visualizations",
-        ["Bar Chart", "Line Chart", "Scatter Plot", "Data Table"]
+        ["Bar Chart", "Line Chart", "Scatter Plot", "Data Table"],
+        key="gap_analysis_selected_visuals"
     )
 
     if gap_analysis_selected_visuals:

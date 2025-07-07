@@ -6,6 +6,11 @@ import os
 
 st.set_page_config(layout="wide")
 
+import time, psutil
+st.write("⏱️ App started at:", time.time())
+st.write("🧠 Session keys:", list(st.session_state.keys()))
+st.write("💾 Memory usage (MB):", psutil.Process().memory_info().rss / 1024**2)
+
 def reset_widget(*keys):
     """Helper to delete keys from session state (e.g., to clear multiselects)."""
     for key in keys:
@@ -26,6 +31,7 @@ def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None, show_bu
 
         # Clear the flag
         st.session_state[f"{tab_name}_reboot_flag"] = False
+        st.session_state[f"{tab_name}_reboot"] = False
 
     # --- BUTTON UI (Optional) ---
     if show_button:

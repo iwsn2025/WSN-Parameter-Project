@@ -2,41 +2,21 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import subprocess
 import sys
 import os
 import time
-import socket
 
 st.set_page_config(layout="wide")
 
 is_cloud = os.environ.get("STREAMLIT_SERVER_HEADLESS") == "true"
 
-if not is_cloud:
-    # Local Reboot
+# Show reboot button only if running on Streamlit Cloud
+if is_cloud:
     if st.sidebar.button("🔁 Reboot App"):
-        st.success("Rebooting app to apply changes... Please wait.")
-        st.session_state.reboot_triggered = True
-        st.stop()
-
-    if st.session_state.get("reboot_triggered", False):
-        st.session_state.reboot_triggered = False
-        python = sys.executable
-        os.execv(python, [python] + sys.argv)
-
-    # Local Git Pull + Reboot
-    if st.sidebar.button("🔁 Pull & Reboot from Git"):
-        with st.spinner("Pulling latest changes from Git..."):
-            result = subprocess.run(["git", "pull"], capture_output=True, text=True)
-            st.text(result.stdout)
-            if result.returncode != 0:
-                st.error("Git pull failed:\n" + result.stderr)
-            else:
-                st.success("Git pull successful. Rebooting app...")
-                st.session_state.reboot_triggered = True
-                st.stop()
+        st.success("Rebooting app (Cloud mode)...")
+        st.rerun()
 else:
-    st.sidebar.info("⛔ Reboot and Git Pull are disabled on Streamlit Cloud.")
+    st.sidebar.info("🔁 Reboot only available on Streamlit Cloud.")
 
 # Function to create line chart data
 def generate_line_data():

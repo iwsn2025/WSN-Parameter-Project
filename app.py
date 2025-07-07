@@ -175,9 +175,10 @@ def reboot_tab(tab_name):
     st.session_state[f"{tab_name}_reboot"] = True
 
 # Helper function to reset widgets (selections in multiselect boxes)
-def reset_widget(key):
-    if key in st.session_state:
-        del st.session_state[key]
+def reset_widget(*keys):
+    for key in keys:
+        if key in st.session_state:
+            del st.session_state[key]
 
 # Tabs
 tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network Configuration", "Closing the Gap", "Runtime Adaptation"])

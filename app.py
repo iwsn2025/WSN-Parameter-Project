@@ -271,10 +271,14 @@ with tab2:
 
     st.session_state.active_tab = "Simulation-to-Reality Gap in Network Configuration"
 
+    # Reboot button logic
     if st.button("🔁 Reboot Gap Analysis Tab"):
-        reboot_tab("Simulation-to-Reality Gap in Network Configuration")
+        # Clear relevant session state before rerun
+        st.session_state["Simulation-to-Reality Gap in Network Configuration_reboot"] = True
+        st.session_state["single_source_selected_visuals"] = []
         st.rerun()
 
+    # Reset message
     if st.session_state.get("Simulation-to-Reality Gap in Network Configuration_reboot", False):
         st.success("Simulation-to-Reality Gap tab has been reset!")
         st.session_state["Simulation-to-Reality Gap in Network Configuration_reboot"] = False

@@ -9,20 +9,42 @@ st.set_page_config(layout="wide")
 # Detect Streamlit Cloud based on unique env variable
 is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
 
-# --- SIDEBAR UI ---
-with st.sidebar:
-    st.markdown("## 🔧 App Controls")
+def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None):
+    """Renders sidebar controls with a reboot button for a specific tab or the full app."""
+    is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
 
-    if is_cloud:
-        reboot = st.button("🔁 Reboot App")
-        st.caption(
-            "Click to soft-reboot the app.\n\nThis will rerun the script and refresh any recent changes you've pushed to the repo. Useful after code updates or config changes.")
+    with st.sidebar:
+        st.markdown("## 🔧 App Controls")
 
-        if reboot:
-            st.success("Rebooting app... Please wait.")
-            st.rerun()
-    else:
-        st.info("This app is running locally.\n\nThe reboot button is only available on Streamlit Cloud.")
+        if is_cloud:
+            label = f"🔁 Reboot {tab_name}" if tab_name else "🔁 Reboot App"
+            reboot = st.button(label)
+
+            st.caption(
+                "Click to soft-reboot the app.\n\n"
+                "This will rerun the script and refresh any recent changes you've pushed to the repo."
+            )
+
+            if reboot:
+                if tab_name:
+                    st.session_state[f"{tab_name}_reboot"] = True
+                    st.session_state[f"{tab_name}_reboot_flag"] = True
+                else:
+                    st.success("Rebooting app... Please wait.")
+                st.rerun()
+
+        else:
+            st.info("This app is running locally.\n\nThe reboot button is only available on Streamlit Cloud.")
+
+    # After rerun: check if reset is needed
+    if tab_name and st.session_state.get(f"{tab_name}_reboot_flag", False):
+        st.success(f"{tab_name} tab has been reset!")
+
+        # Reset specified widgets
+        if widget_keys_to_reset:
+            reset_widget(*widget_keys_to_reset)
+
+        st.session_state[f"{tab_name}_reboot_flag"] = False
 
 # st.write("Environment Variables:")
 # st.code("\n".join(f"{k}={v}" for k, v in os.environ.items()))
@@ -174,8 +196,8 @@ if "active_tab" not in st.session_state:
 def reboot_tab(tab_name):
     st.session_state[f"{tab_name}_reboot"] = True
 
-# Helper function to reset widgets (selections in multiselect boxes)
 def reset_widget(*keys):
+    """Helper to delete keys from session state (e.g., to clear multiselects)."""
     for key in keys:
         if key in st.session_state:
             del st.session_state[key]
@@ -186,10 +208,7 @@ tab1, tab2, tab3, tab4 = st.tabs(["Home", "Simulation-to-Reality Gap in Network 
 # Home Tab
 with tab1:
     st.session_state.active_tab = "Home"
-
-    if st.button("🔁 Reboot Home Tab"):
-        reboot_tab("Home")
-        st.rerun()
+    app_refresh("Home")
 
     if st.session_state.get("Home_reboot", False):
         st.success("Home tab has been reset!")
@@ -274,22 +293,12 @@ with tab1:
 
 # Gap Analysis Tab
 with tab2:
-
     st.session_state.active_tab = "Simulation-to-Reality Gap in Network Configuration"
 
-    # Reboot button logic
-    if st.button("🔁 Reboot Gap Analysis Tab"):
-        # Clear relevant session state before rerun
-        st.session_state["Simulation-to-Reality Gap in Network Configuration_reboot"] = True
-        st.session_state["gap_reboot_flag"] = True # <- flag to trigger reset on next run
-        st.rerun()
-
-    # Reset message
-    if st.session_state.get("gap_reboot_flag"):
-        st.success("Simulation-to-Reality Gap tab has been reset!")
-        # Fully reset the widget so it appears empty
-        reset_widget("gap_analysis_selected_visuals")
-        st.session_state["gap_reboot_flag"] = False # Clear the flag
+    app_refresh(
+        tab_name="Simulation-to-Reality Gap in Network Configuration",
+        widget_keys_to_reset=["gap_analysis_selected_visuals"]
+    )
 
     st.header("Simulation-to-Reality Gap in Network Configuration")
 

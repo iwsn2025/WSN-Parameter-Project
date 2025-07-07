@@ -6,39 +6,33 @@ import os
 
 st.set_page_config(layout="wide")
 
-# Detect Streamlit Cloud based on unique env variable
-is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
-
 def app_refresh(tab_name: str = None, widget_keys_to_reset: list = None):
     """Renders sidebar controls with a reboot button for a specific tab or the full app."""
     is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
 
-    with st.sidebar:
-        st.markdown("## 🔧 App Controls")
+    if is_cloud:
+        label = f"🔁 Refresh App"
+        reboot = st.button(label)
 
-        if is_cloud:
-            label = f"🔁 Reboot {tab_name}" if tab_name else "🔁 Reboot App"
-            reboot = st.button(label)
+        st.caption(
+            "Click to soft-reboot the app.\n\n"
+            "This will rerun the script and refresh any recent changes you've pushed to the repo."
+        )
 
-            st.caption(
-                "Click to soft-reboot the app.\n\n"
-                "This will rerun the script and refresh any recent changes you've pushed to the repo."
-            )
+        if reboot:
+            if tab_name:
+                st.session_state[f"{tab_name}_reboot"] = True
+                st.session_state[f"{tab_name}_reboot_flag"] = True
+            else:
+                st.success("Rebooting app... Please wait.")
+            st.rerun()
 
-            if reboot:
-                if tab_name:
-                    st.session_state[f"{tab_name}_reboot"] = True
-                    st.session_state[f"{tab_name}_reboot_flag"] = True
-                else:
-                    st.success("Rebooting app... Please wait.")
-                st.rerun()
-
-        else:
-            st.info("This app is running locally.\n\nThe reboot button is only available on Streamlit Cloud.")
+    else:
+        st.info("This app is running locally.\n\nThe reboot button is only available on Streamlit Cloud.")
 
     # After rerun: check if reset is needed
     if tab_name and st.session_state.get(f"{tab_name}_reboot_flag", False):
-        st.success(f"{tab_name} tab has been reset!")
+        st.success(f"App has been refreshed!")
 
         # Reset specified widgets
         if widget_keys_to_reset:
@@ -393,29 +387,10 @@ with tab3:
 
     st.session_state.active_tab = "Closing the Gap"
 
-    # Reboot button logic
-    if st.button("🔁 Reboot Closing the Gap Tab"):
-        # Clear relevant session state before rerun
-        st.session_state["Closing the Gap_reboot"] = True
-        st.session_state["closing_reboot_flag"] = True # <- flag to trigger reset on next run
-        st.rerun()
-
-    # Reset message
-    if st.session_state.get("closing_reboot_flag"):
-        st.success("Closing the Gap tab has been reset!")
-        # Fully reset the widget so it appears empty
-        reset_widget("single_source", "contrastive_domain", "multi_source", "combined_source")
-        st.session_state["closing_reboot_flag"] = False # Clear the flag
-
-    # --- Initialize session state for multiselect ---
-    if "single_source" not in st.session_state:
-        st.session_state["single_source"] = []
-    if "contrastive_domain" not in st.session_state:
-        st.session_state["contrastive_domain"] = []
-    if "multi_source" not in st.session_state:
-        st.session_state["multi_source"] = []
-    if "combined_source" not in st.session_state:
-        st.session_state["combined_source"] = []
+    app_refresh(
+        tab_name="Closing the Gap",
+        widget_keys_to_reset=["single_source", "contrastive_domain", "multi_source", "combined_source"]
+    )
 
     st.header("Our solutions to close the simulation-to-reality gap in network configuration.")
 
@@ -661,25 +636,10 @@ with tab3:
 with tab4:
     st.session_state.active_tab = "Runtime Adaptation"
 
-    # Reboot button logic
-    if st.button("🔁 Reboot Runtime Adaptation Tab"):
-        # Clear relevant session state before rerun
-        st.session_state["Runtime Adaptation_reboot"] = True
-        st.session_state["domain_reboot_flag"] = True  # <- flag to trigger reset on next run
-        st.rerun()
-
-    # Reset message
-    if st.session_state.get("domain_reboot_flag"):
-        st.success("Runtime Adaptation tab has been reset!")
-        # Fully reset the widget so it appears empty
-        reset_widget("meta_learning", "domain_adaptation")
-        st.session_state["domain_reboot_flag"] = False  # Clear the flag
-
-    # --- Initialize session state for multiselect ---
-    if "meta_learning" not in st.session_state:
-        st.session_state["meta_learning"] = []
-    if "domain_adaptation" not in st.session_state:
-        st.session_state["domain_adaptation"] = []
+    app_refresh(
+        tab_name="Runtime Adaptation",
+        widget_keys_to_reset=["domain_adaptation", "meta_learning"]
+    )
 
     st.header("Meta Learning Results")
 

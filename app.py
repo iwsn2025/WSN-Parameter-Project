@@ -6,8 +6,8 @@ import os
 
 st.set_page_config(layout="wide")
 
-# ✅ Reliable check for Streamlit Cloud
-is_cloud = os.environ.get("STREAMLIT_ENV") == "cloud"
+# Detect Streamlit Cloud based on unique env variable
+is_cloud = os.environ.get("SF_PARTNER") == "streamlit"
 
 # Sidebar reboot button
 if is_cloud:
@@ -17,8 +17,8 @@ if is_cloud:
 else:
     st.sidebar.info("🔁 Reboot only available on Streamlit Cloud.")
 
-st.write("Environment Variables:")
-st.code("\n".join(f"{k}={v}" for k, v in os.environ.items()))
+# st.write("Environment Variables:")
+# st.code("\n".join(f"{k}={v}" for k, v in os.environ.items()))
 
 # Function to create line chart data
 def generate_line_data():

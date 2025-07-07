@@ -640,16 +640,21 @@ with tab3:
 
 # Meta Learning Tab
 with tab4:
-
     st.session_state.active_tab = "Runtime Adaptation"
 
+    # Reboot button logic
     if st.button("🔁 Reboot Runtime Adaptation Tab"):
-        reboot_tab("Runtime Adaptation")
+        # Clear relevant session state before rerun
+        st.session_state["Runtime Adaptation_reboot"] = True
+        st.session_state["reboot_flag"] = True  # <- flag to trigger reset on next run
         st.rerun()
 
-    if st.session_state.get("Runtime Adaptation_reboot", False):
+    # Reset message
+    if st.session_state.get("reboot_flag"):
         st.success("Runtime Adaptation tab has been reset!")
-        st.session_state["Runtime Adaptation_reboot"] = False
+        # Fully reset the widget so it appears empty
+        reset_widget("meta_learning", "domain_adaptation")
+        st.session_state["reboot_flag"] = False  # Clear the flag
 
     st.header("Meta Learning Results")
 
@@ -678,7 +683,8 @@ with tab4:
 
     domain_adaptation_results_tab4 = st.multiselect(
         "Choose visualizations to display for Domain Adaptation Results",
-        ["Bar Chart", "Line Chart", "Data Table"]
+        ["Bar Chart", "Line Chart", "Data Table"],
+        key="domain_adaptation"
     )
     if domain_adaptation_results_tab4:
         if "Bar Chart" in domain_adaptation_results_tab4:
@@ -708,7 +714,8 @@ with tab4:
 
     meta_learning_selected_visuals = st.multiselect(
         "Choose visualizations to display for Meta Learning Results",
-        ["Bar Chart", "Line Chart", "Data Table"]
+        ["Bar Chart", "Line Chart", "Data Table"],
+        key="meta_learning"
     )
 
     if meta_learning_selected_visuals:

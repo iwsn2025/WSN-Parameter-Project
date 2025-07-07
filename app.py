@@ -293,6 +293,10 @@ with tab2:
 
     st.header("Simulation-to-Reality Gap in Network Configuration")
 
+    # --- Initialize session state for multiselect ---
+    if "gap_analysis_selected_visuals" not in st.session_state:
+        st.session_state["gap_analysis_selected_visuals"] = []
+
     # Load experiment data from CSV
     gap_df = load_experiment_data()
 
@@ -326,10 +330,6 @@ with tab2:
         ["Bar Chart", "Line Chart", "Scatter Plot", "Data Table"],
         key="gap_analysis_selected_visuals"
     )
-
-    # --- Initialize session state for multiselect ---
-    if "gap_analysis_selected_visuals" not in st.session_state:
-        st.session_state["gap_analysis_selected_visuals"] = []
 
     if gap_analysis_selected_visuals:
         if "Bar Chart" in gap_analysis_selected_visuals:

@@ -171,7 +171,7 @@ with tab1:
     st.session_state.active_tab = "Home"
     app_refresh(tab_name="Home", show_button=False)
 
-    st.header("**CAREER: Advancing Network Configuration and Runtime Adaptation Methods for Industrial Wireless Sensor-Actuator Networks**")
+    st.header("**CAREER: 1 Advancing Network Configuration and Runtime Adaptation Methods for Industrial Wireless Sensor-Actuator Networks**")
 
     st.subheader("**Team**")
     st.write('<p><strong>Primary Investigator</strong>: <a href="https://users.cs.fiu.edu/~msha/index.htm" target="_blank"> Mo Sha</a>, Associate Professor, Knight Foundation School of Computing and Information Sciences, Florida International University</p>', unsafe_allow_html=True)
